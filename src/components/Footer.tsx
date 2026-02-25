@@ -42,7 +42,7 @@ export default function Footer() {
               className="w-9 h-9 rounded-full border border-cream/20 flex items-center justify-center text-cream/50 hover:border-cream/60 hover:text-cream transition-colors text-xs font-bold">
               IG
             </a>
-            <a href="https://maps.google.com" target="_blank" rel="noreferrer"
+            <a href="https://www.google.com/maps/place/Dana+Vegan+House+-+Nh%C3%A0+Chay+Dana/@21.0362865,105.850389,17z/data=!4m6!3m5!1s0x3135ab16938eb5e7:0x5d8527ec7fb235f4!8m2!3d21.0362884!4d105.8529741!16s%2Fg%2F11l6s__8_5?entry=ttu&g_ep=EgoyMDI2MDIyMi4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noreferrer"
               className="w-9 h-9 rounded-full border border-cream/20 flex items-center justify-center text-cream/50 hover:border-cream/60 hover:text-cream transition-colors text-xs font-bold">
               ↗
             </a>

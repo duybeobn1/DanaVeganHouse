@@ -41,7 +41,7 @@ export default function Contact() {
                 <p className="text-earth-mid">Hà Nội, Việt Nam</p>
               </address>
               <a
-                href="https://maps.google.com/?q=12+Dong+Thai+Hoan+Kiem+Hanoi"
+                href="https://www.google.com/maps/place/Dana+Vegan+House+-+Nh%C3%A0+Chay+Dana/@21.0362865,105.850389,17z/data=!4m6!3m5!1s0x3135ab16938eb5e7:0x5d8527ec7fb235f4!8m2!3d21.0362884!4d105.8529741!16s%2Fg%2F11l6s__8_5?entry=ttu&g_ep=EgoyMDI2MDIyMi4wIKXMDSoASAFQAw%3D%3D"
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 mt-4 text-xs font-bold tracking-wider uppercase text-forest hover:text-forest-mid transition-colors"
@@ -104,7 +104,7 @@ export default function Contact() {
                   { label: 'Instagram', href: 'https://instagram.com' },
                   { label: 'TripAdvisor', href: '#' },
                   { label: 'HappyCow', href: '#' },
-                  { label: 'Google Maps', href: 'https://maps.google.com/?q=12+Dong+Thai+Hoan+Kiem+Hanoi' },
+                  { label: 'Google Maps', href: 'https://www.google.com/maps/place/Dana+Vegan+House+-+Nh%C3%A0+Chay+Dana/@21.0362865,105.850389,17z/data=!4m6!3m5!1s0x3135ab16938eb5e7:0x5d8527ec7fb235f4!8m2!3d21.0362884!4d105.8529741!16s%2Fg%2F11l6s__8_5?entry=ttu&g_ep=EgoyMDI2MDIyMi4wIKXMDSoASAFQAw%3D%3D' },
                 ].map(({ label, href }) => (
                   <a
                     key={label}
@@ -132,7 +132,7 @@ export default function Contact() {
                 <p className="text-cream font-black text-lg">12 Đông Thái</p>
                 <p className="text-cream/60 text-sm mt-1">Hàng Buồm, Hoàn Kiếm · Hà Nội</p>
                 <a
-                  href="https://maps.google.com/?q=12+Dong+Thai+Hoan+Kiem+Hanoi"
+                  href="https://www.google.com/maps/place/Dana+Vegan+House+-+Nh%C3%A0+Chay+Dana/@21.0362865,105.850389,17z/data=!4m6!3m5!1s0x3135ab16938eb5e7:0x5d8527ec7fb235f4!8m2!3d21.0362884!4d105.8529741!16s%2Fg%2F11l6s__8_5?entry=ttu&g_ep=EgoyMDI2MDIyMi4wIKXMDSoASAFQAw%3D%3D"
                   target="_blank"
                   rel="noreferrer"
                   className="mt-5 text-xs font-bold tracking-widest uppercase text-gold border border-gold/40 px-5 py-2 rounded-full hover:bg-gold hover:text-earth transition-all duration-200"
