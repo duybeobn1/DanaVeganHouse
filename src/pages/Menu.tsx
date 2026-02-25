@@ -1,0 +1,208 @@
+import { useState, useEffect, useRef } from 'react'
+import { useLanguage } from '../context/LanguageContext'
+import { allCategories, mamNha } from '../data/menuData'
+import type { MenuItem } from '../data/menuData'
+
+const MAM_NHA_ID = 'mam-nha'
+
+const allTabs = [
+  ...allCategories.map(c => ({ id: c.id, name: c.name })),
+  { id: MAM_NHA_ID, name: { vi: 'Mâm Nhà', en: 'Set Menus' } },
+]
+
+function MenuItemRow({ item, lang }: { item: MenuItem; lang: 'vi' | 'en' }) {
+  return (
+    <div className="menu-item flex items-start justify-between gap-4 py-4 px-2 rounded-lg transition-colors">
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 flex-wrap">
+          <h4 className="font-bold text-earth text-base leading-tight">
+            {item.name[lang]}
+          </h4>
+          {lang === 'vi' && item.name.en !== item.name.vi && (
+            <span className="text-earth/40 text-xs italic hidden sm:inline">{item.name.en}</span>
+          )}
+          {item.isSignature && (
+            <span className="text-[0.6rem] font-bold tracking-widest uppercase bg-brand/10 text-brand px-1.5 py-0.5 rounded">
+              ★ {lang === 'vi' ? 'Đặc trưng' : 'Signature'}
+            </span>
+          )}
+          {item.isNew && (
+            <span className="text-[0.6rem] font-bold tracking-widest uppercase bg-forest/10 text-forest px-1.5 py-0.5 rounded">
+              {lang === 'vi' ? 'Mới' : 'New'}
+            </span>
+          )}
+        </div>
+        {item.region && (
+          <p className="text-[0.65rem] font-semibold text-brand/60 mt-0.5 tracking-wider">
+            📍 {item.region}
+          </p>
+        )}
+        <p className="text-earth/50 text-xs mt-1.5 leading-relaxed">
+          {item.ingredients[lang]}
+        </p>
+      </div>
+      <div className="text-right shrink-0">
+        <p className="font-black text-brand text-sm whitespace-nowrap">{item.price}đ</p>
+      </div>
+    </div>
+  )
+}
+
+export default function Menu() {
+  const { lang, t } = useLanguage()
+  const [activeTab, setActiveTab] = useState(allCategories[0].id)
+  const tabsRef = useRef<HTMLDivElement>(null)
+
+  // Scroll active tab into view
+  useEffect(() => {
+    const btn = tabsRef.current?.querySelector(`[data-tab="${activeTab}"]`)
+    btn?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' })
+  }, [activeTab])
+
+  const activeCat = allCategories.find(c => c.id === activeTab)
+  const showSetMenus = activeTab === MAM_NHA_ID
+
+  return (
+    <main className="min-h-screen bg-cream">
+      {/* ── Hero Banner ── */}
+      <section
+        className="relative pt-20 pb-16 md:pt-28 md:pb-20 rice-texture overflow-hidden"
+        style={{
+          background: 'radial-gradient(ellipse at 70% 50%, #C4623A 0%, #8B3A1A 55%, #4A1E0A 100%)',
+        }}
+      >
+        <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
+          <p className="text-xs font-bold tracking-[0.4em] uppercase text-gold/80 mb-4">
+            {t('Dāna Vegan House', 'Dāna Vegan House')}
+          </p>
+          <h1 className="text-5xl md:text-7xl font-black text-cream leading-none mb-4">
+            {t('THỰC ĐƠN', 'MENU')}
+          </h1>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="h-px w-12 bg-cream/30" />
+            <div className="w-1.5 h-1.5 rounded-full bg-gold" />
+            <div className="h-px w-12 bg-cream/30" />
+          </div>
+          <p className="text-cream/60 text-sm max-w-md mx-auto">
+            {t(
+              'Giá chưa bao gồm VAT · Nguyên liệu thay đổi theo mùa',
+              'Prices exclude VAT · Ingredients may vary by season',
+            )}
+          </p>
+        </div>
+      </section>
+
+      {/* ── Sticky Category Tabs ── */}
+      <div className="sticky top-16 md:top-20 z-40 bg-cream border-b border-rice-dark shadow-sm">
+        <div ref={tabsRef} className="flex gap-2 px-4 py-3 overflow-x-auto scrollbar-none">
+          {allTabs.map(tab => (
+            <button
+              key={tab.id}
+              data-tab={tab.id}
+              className={`cat-pill ${activeTab === tab.id ? 'active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              {tab.name[lang]}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Content ── */}
+      <div className="max-w-3xl mx-auto px-4 md:px-6 py-10 pb-20">
+
+        {/* ── Regular Category ── */}
+        {activeCat && !showSetMenus && (
+          <div>
+            {/* Category Header */}
+            <div
+              className="relative rounded-2xl overflow-hidden mb-8 p-8 rice-texture"
+              style={{
+                background: 'radial-gradient(ellipse at 60% 40%, #C4623A 0%, #8B3A1A 100%)',
+              }}
+            >
+              <p className="text-[0.6rem] font-bold tracking-[0.4em] uppercase text-gold/70 mb-2">
+                {activeCat.subtitle[lang]}
+              </p>
+              <h2 className="text-3xl md:text-4xl font-black text-cream mb-3">
+                {activeCat.name[lang]}
+              </h2>
+              <p className="text-cream/60 text-sm leading-relaxed max-w-lg">
+                {activeCat.description[lang]}
+              </p>
+            </div>
+
+            {/* Items */}
+            <div className="divide-y divide-rice-dark">
+              {activeCat.items.map(item => (
+                <MenuItemRow key={item.id} item={item} lang={lang} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── Set Menus ── */}
+        {showSetMenus && (
+          <div>
+            {/* Header */}
+            <div
+              className="relative rounded-2xl overflow-hidden mb-8 p-8 rice-texture"
+              style={{
+                background: 'radial-gradient(ellipse at 60% 40%, #C4623A 0%, #8B3A1A 100%)',
+              }}
+            >
+              <p className="text-[0.6rem] font-bold tracking-[0.4em] uppercase text-gold/70 mb-2">
+                {t('Dành cho 2–4 người', 'For 2–4 guests')}
+              </p>
+              <h2 className="text-3xl md:text-4xl font-black text-cream mb-3">
+                {t('Mâm Cơm Nhà', 'Family Table Sets')}
+              </h2>
+              <p className="text-cream/60 text-sm leading-relaxed max-w-lg">
+                {t(
+                  'Mâm Cơm Nhà theo gợi ý của Dāna dành cho Nhóm từ 2–4 người. Mỗi Mâm Cơm mang một tinh thần khác nhau.',
+                  'Dāna\'s curated family set menus for groups of 2–4. Each set carries a unique regional spirit.',
+                )}
+              </p>
+            </div>
+
+            {/* Set menu cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {mamNha.map(set => (
+                <div key={set.id} className="bg-cream border border-rice-dark rounded-2xl overflow-hidden hover:shadow-md transition-shadow">
+                  <div className="bg-earth px-5 py-4">
+                    <h3 className="text-lg font-black text-cream">{set.name[lang]}</h3>
+                    <div className="flex items-center justify-between mt-1">
+                      <p className="text-cream/50 text-xs">{set.serves}</p>
+                      <div className="text-right">
+                        <p className="text-gold/50 text-xs line-through">{set.originalPrice.toLocaleString('vi-VN')}đ</p>
+                        <p className="text-gold font-black text-lg">{set.price.toLocaleString('vi-VN')}đ</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="px-5 py-4">
+                    <p className="text-xs font-bold tracking-wider uppercase text-earth/40 mb-3">
+                      {t('Bao gồm', 'Includes')}
+                    </p>
+                    <ul className="space-y-1.5">
+                      {set.dishes.map(dish => (
+                        <li key={dish} className="flex items-start gap-2 text-sm text-earth/70">
+                          <span className="text-brand mt-0.5 text-xs shrink-0">•</span>
+                          {dish}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Footer note */}
+        <p className="text-center text-xs text-earth/30 mt-10">
+          {t('Giá chưa bao gồm VAT · Thực đơn có thể thay đổi', 'Prices exclude VAT · Menu subject to change')}
+        </p>
+      </div>
+    </main>
+  )
+}
