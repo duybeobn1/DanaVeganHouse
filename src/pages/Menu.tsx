@@ -52,11 +52,18 @@ export default function Menu() {
   const { lang, t } = useLanguage()
   const [activeTab, setActiveTab] = useState(allCategories[0].id)
   const tabsRef = useRef<HTMLDivElement>(null)
+  const isFirstRender = useRef(true)
 
-  // Scroll active tab into view
+  // On tab change: scroll page to top + scroll the tab pill into view horizontally
   useEffect(() => {
     const btn = tabsRef.current?.querySelector(`[data-tab="${activeTab}"]`)
     btn?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' })
+
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [activeTab])
 
   const activeCat = allCategories.find(c => c.id === activeTab)

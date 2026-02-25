@@ -34,8 +34,12 @@ export default function Navbar() {
         {/* ── Logo ── */}
         <Link to="/" className="flex flex-col items-center leading-none group" onClick={() => setMenuOpen(false)}>
           <span
-            className="text-3xl font-black tracking-tight transition-colors duration-300"
-            style={{ color: scrolled ? '#C4623A' : '#FFF8EC' }}
+            className="text-3xl tracking-tight transition-colors duration-300"
+            style={{
+              fontFamily: '"Nunito", "Be Vietnam Pro", sans-serif',
+              fontWeight: 900,
+              color: scrolled ? '#E8A800' : '#FFF8EC',
+            }}
           >
             dāna
           </span>

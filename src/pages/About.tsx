@@ -178,6 +178,33 @@ export default function About() {
             </h2>
           </div>
 
+          {/* ★ Restaurant interior photos from brand moodboard (Image 2): */}
+          {/* bamboo ceiling: /images/restaurant-ceiling.jpg */}
+          {/* bamboo walls: /images/bamboo-walls.jpg */}
+          {/* cocktail coasters: /images/cocktail-coasters.jpg */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            {[
+              { src: '/images/restaurant-ceiling.jpg', label: t('Trần Tre', 'Bamboo Ceiling') },
+              { src: '/images/bamboo-walls.jpg', label: t('Vách Gỗ', 'Wooden Walls') },
+              { src: '/images/cocktail-coasters.jpg', label: t('Lót Li Đāna', 'Dāna Coasters') },
+            ].map(({ src, label }) => (
+              <div
+                key={src}
+                className="aspect-video rounded-2xl overflow-hidden relative bg-earth/60 flex items-center justify-center"
+              >
+                <img
+                  src={src}
+                  alt={label}
+                  className="w-full h-full object-cover"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                />
+                <span className="absolute text-cream/30 text-xs font-bold tracking-wider uppercase">
+                  {label}
+                </span>
+              </div>
+            ))}
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {artworks.map(({ nameVI, nameEN, descVI, descEN }) => (
               <div key={nameVI} className="border border-cream/10 rounded-2xl p-6 hover:border-cream/25 transition-colors">

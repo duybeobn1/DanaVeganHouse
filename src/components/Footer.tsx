@@ -22,7 +22,12 @@ export default function Footer() {
         {/* Brand */}
         <div>
           <div className="mb-4">
-            <span className="text-4xl font-black text-cream tracking-tight">dāna</span>
+            <span
+              className="text-4xl tracking-tight"
+              style={{ fontFamily: '"Nunito", "Be Vietnam Pro", sans-serif', fontWeight: 900, color: '#E8A800' }}
+            >
+              dāna
+            </span>
             <p className="text-[0.6rem] font-bold tracking-[0.4em] uppercase text-cream/50 mt-0.5">
               VEGAN HOUSE
             </p>

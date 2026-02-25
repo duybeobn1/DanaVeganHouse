@@ -27,10 +27,15 @@
   /* === ACCENT === */
   --color-gold:         #D4A843;
   --color-gold-light:   #F0CA78;
+  --color-gold-brand:   #E8A800;
+
+  /* === FOREST DARK (brand card bg) === */
+  --color-forest-dark:  #1E3A14;
 
   /* === TYPOGRAPHY === */
   --default-font-family: "Be Vietnam Pro", sans-serif;
   --font-display: "Be Vietnam Pro", sans-serif;
+  --font-logo: "Nunito", "Be Vietnam Pro", sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -60,6 +65,15 @@ body {
     radial-gradient(ellipse 2px 5px at 88% 42%, rgba(255,248,236,0.12) 0%, transparent 100%),
     radial-gradient(ellipse 2px 5px at 22% 85%, rgba(255,248,236,0.09) 0%, transparent 100%);
   pointer-events: none;
+}
+
+/* PAGE TRANSITION */
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-transition {
+  animation: pageFadeIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* SCROLL FADE-IN */

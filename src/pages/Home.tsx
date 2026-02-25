@@ -85,7 +85,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-
+      {/* ═
       {/* ══════════════════════════════════════════════
           2. PHILOSOPHY STRIP
       ══════════════════════════════════════════════ */}
@@ -127,15 +127,17 @@ export default function Home() {
       ══════════════════════════════════════════════ */}
       <section className="bg-cream py-20 md:py-28">
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          {/* Left: decorative */}
+          {/* Left: restaurant interior photo (from brand moodboard Image 2) */}
           <div className="order-2 md:order-1">
+            {/* ★ DROP PHOTO HERE: replace this div with <img src="/images/restaurant-interior.jpg" .../> */}
+            {/* Suggested photos from brand moodboard: bamboo ceiling or wall panels */}
             <div
               className="relative rounded-2xl overflow-hidden flex items-center justify-center aspect-square max-w-md mx-auto"
               style={{ background: 'radial-gradient(circle at center, #C4623A 0%, #8B3A1A 70%)' }}
             >
               {/* Rice grain pattern */}
               <div className="absolute inset-0 rice-texture" />
-              {/* Central text art */}
+              {/* Central text art — replace with actual photo when available */}
               <div className="relative z-10 text-center p-8">
                 <p className="text-[6rem] md:text-[8rem] font-black text-cream/15 leading-none select-none">
                   1936
@@ -344,7 +346,7 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* Drink cards */}
+          {/* Drink cards — ★ Add cocktail photo: /images/cocktail-coasters.jpg (from brand moodboard Image 2) */}
           <div className="grid grid-cols-1 gap-4">
             {[
               { name: { vi: 'Sữa Gạo Lắc Hàng Chuối', en: 'Hàng Chuối Shaken Rice Milk' }, price: '65.000', tag: t('Đặc Trưng', 'Signature') },
