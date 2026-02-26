@@ -5,7 +5,17 @@ export default function Footer() {
   const { t } = useLanguage()
 
   return (
-    <footer className="bg-earth text-cream/80">
+    <footer className="relative overflow-hidden bg-earth text-cream/80">
+      {/* Subtle background texture */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.06]"
+        style={{
+          backgroundImage: 'url(/images/rice_grain_with_dana_logo.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
+      <div className="relative">
       {/* ── Tagline Banner ── */}
       <div className="bg-brand py-6 text-center">
         <p className="text-cream font-black text-xl md:text-2xl tracking-widest uppercase">
@@ -118,6 +128,7 @@ export default function Footer() {
           <p>© 2024 Dāna Vegan House. {t('Mọi quyền được bảo lưu.', 'All rights reserved.')}</p>
           <p>{t('Giá chưa bao gồm VAT.', 'Prices exclude VAT.')}</p>
         </div>
+      </div>
       </div>
     </footer>
   )

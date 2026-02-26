@@ -7,12 +7,24 @@ export default function Contact() {
   return (
     <main>
       {/* ── Hero ── */}
-      <section
-        className="relative pt-20 pb-16 md:pt-28 md:pb-20 rice-texture overflow-hidden"
-        style={{
-          background: 'radial-gradient(ellipse at 50% 50%, #2A5C34 0%, #143018 60%, #0C200F 100%)',
-        }}
-      >
+      <section className="relative pt-20 pb-16 md:pt-28 md:pb-20 rice-texture overflow-hidden">
+        {/* Background image with overlay */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'url(/images/farmers_green_wallpaper.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+          }}
+        />
+        {/* Gradient overlay */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'radial-gradient(ellipse at 50% 50%, rgba(42, 92, 52, 0.9) 0%, rgba(20, 48, 24, 0.95) 60%, rgba(12, 32, 15, 1) 100%)',
+          }}
+        />
         <div className="max-w-3xl mx-auto px-6 text-center relative z-10">
           <p className="text-xs font-bold tracking-[0.4em] uppercase text-forest-light mb-4">
             {t('Ghé Thăm Chúng Tôi', 'Visit Us')}
@@ -122,20 +134,25 @@ export default function Contact() {
 
           {/* Right: map + note */}
           <div className="space-y-6">
-            {/* Map placeholder */}
+            {/* Map card with blended background image */}
             <div
               className="rounded-2xl aspect-video relative overflow-hidden"
-              style={{ backgroundColor: '#1E4426' }}
+              style={{
+                backgroundImage: 'url(/images/a-vegan-restaurant-of.png)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
             >
+              {/* dark overlay for readability */}
+              <div className="absolute inset-0 bg-black/35" />
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-                <p className="text-5xl mb-3">🗺️</p>
-                <p className="text-cream font-black text-lg">12 Đông Thái</p>
-                <p className="text-cream/60 text-sm mt-1">Hàng Buồm, Hoàn Kiếm · Hà Nội</p>
+                <p className="text-cream font-black text-xl md:text-2xl">12 Đông Thái</p>
+                <p className="text-cream/80 text-sm md:text-base mt-1">Hàng Buồm, Hoàn Kiếm · Hà Nội</p>
                 <a
                   href="https://www.google.com/maps/place/Dana+Vegan+House+-+Nh%C3%A0+Chay+Dana/@21.0362865,105.850389,17z/data=!4m6!3m5!1s0x3135ab16938eb5e7:0x5d8527ec7fb235f4!8m2!3d21.0362884!4d105.8529741!16s%2Fg%2F11l6s__8_5?entry=ttu&g_ep=EgoyMDI2MDIyMi4wIKXMDSoASAFQAw%3D%3D"
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-5 text-xs font-bold tracking-widest uppercase text-gold border border-gold/40 px-5 py-2 rounded-full hover:bg-gold hover:text-earth transition-all duration-200"
+                  className="mt-5 text-xs font-bold tracking-widest uppercase text-gold border border-gold/50 px-5 py-2 rounded-full hover:bg-gold hover:text-earth transition-all duration-200"
                 >
                   {t('Chỉ Đường', 'Get Directions')} ↗
                 </a>
@@ -182,17 +199,26 @@ export default function Contact() {
       </section>
 
       {/* ── CTA Banner ── */}
-      <section
-        className="py-16 text-center rice-texture relative overflow-hidden"
-        style={{
-          background: 'radial-gradient(ellipse at 50% 50%, #C4623A 0%, #8B3A1A 100%)',
-        }}
-      >
+      <section className="py-16 text-center relative overflow-hidden">
+        {/* Background image */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'url(/images/branding_image_with_cups_of_beverage_and_logo.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+        {/* Color overlay for brand look */}
+        <div className="absolute inset-0" style={{
+          background: 'radial-gradient(ellipse at 50% 50%, rgba(196,98,58,0.85) 0%, rgba(139,58,26,0.95) 100%)'
+        }} />
+
         <div className="relative z-10 max-w-2xl mx-auto px-6">
           <p className="text-cream font-black text-3xl md:text-4xl mb-4">
             {t('Đặt Bàn Ngay', 'Reserve a Table')}
           </p>
-          <p className="text-cream/70 text-sm mb-8">
+          <p className="text-cream/80 text-sm mb-8">
             {t('Chúng tôi rất mong được phục vụ bạn!', 'We look forward to serving you!')}
           </p>
           <div className="flex gap-4 justify-center">

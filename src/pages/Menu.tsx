@@ -52,6 +52,7 @@ export default function Menu() {
   const { lang, t } = useLanguage()
   const [activeTab, setActiveTab] = useState(allCategories[0].id)
   const tabsRef = useRef<HTMLDivElement>(null)
+  const contentTopRef = useRef<HTMLDivElement>(null)
   const isFirstRender = useRef(true)
 
   // On tab change: scroll page to top + scroll the tab pill into view horizontally
@@ -63,7 +64,10 @@ export default function Menu() {
       isFirstRender.current = false
       return
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    // Smooth-scroll page to the top of content (below sticky tabs)
+    const headerOffset = 120 // accommodates sticky navbar + tabs
+    const targetTop = (contentTopRef.current?.getBoundingClientRect().top || 0) + window.scrollY - headerOffset
+    window.scrollTo({ top: Math.max(targetTop, 0), behavior: 'smooth' })
   }, [activeTab])
 
   const activeCat = allCategories.find(c => c.id === activeTab)
@@ -72,36 +76,57 @@ export default function Menu() {
   return (
     <main className="min-h-screen bg-cream">
       {/* ── Hero Banner ── */}
-      <section
-        className="relative pt-20 pb-16 md:pt-28 md:pb-20 rice-texture overflow-hidden"
-        style={{
-          background: 'radial-gradient(ellipse at 70% 50%, #C4623A 0%, #8B3A1A 55%, #4A1E0A 100%)',
-        }}
-      >
-        <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-          <p className="text-xs font-bold tracking-[0.4em] uppercase text-gold/80 mb-4">
-            {t('Dāna Vegan House', 'Dāna Vegan House')}
-          </p>
-          <h1 className="text-5xl md:text-7xl font-black text-cream leading-none mb-4">
-            {t('THỰC ĐƠN', 'MENU')}
-          </h1>
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="h-px w-12 bg-cream/30" />
-            <div className="w-1.5 h-1.5 rounded-full bg-gold" />
-            <div className="h-px w-12 bg-cream/30" />
+      <div className="full-bleed">
+        <section className="relative min-h-[48vh] md:min-h-[54vh] pt-16 md:pt-20 pb-8 md:pb-10 overflow-hidden flex items-center justify-center">
+          {/* Wallpaper: farmers art over hero image */}
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: 'url(/images/menu_front_page_green.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+            }}
+          />
+          {/* Farmers overlay (simple, no blend) */}
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: 'url(/images/farmers_horizontal_yellow.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center bottom',
+              backgroundRepeat: 'no-repeat',
+              opacity: 0.55,
+            }}
+          />
+          {/* Subtle dark overlay for text readability */}
+          <div className="absolute inset-0 bg-black/30" />
+
+          <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
+            <p className="text-xs font-bold tracking-[0.4em] uppercase text-gold/80 mb-4">
+              {t('Dāna Vegan House', 'Dāna Vegan House')}
+            </p>
+            <h1 className="text-5xl md:text-7xl font-black text-cream leading-none mb-4">
+              {t('THỰC ĐƠN', 'MENU')}
+            </h1>
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="h-px w-12 bg-cream/30" />
+              <div className="w-1.5 h-1.5 rounded-full bg-gold" />
+              <div className="h-px w-12 bg-cream/30" />
+            </div>
+            <p className="text-cream/60 text-sm max-w-md mx-auto">
+              {t(
+                'Giá chưa bao gồm VAT · Nguyên liệu thay đổi theo mùa',
+                'Prices exclude VAT · Ingredients may vary by season',
+              )}
+            </p>
           </div>
-          <p className="text-cream/60 text-sm max-w-md mx-auto">
-            {t(
-              'Giá chưa bao gồm VAT · Nguyên liệu thay đổi theo mùa',
-              'Prices exclude VAT · Ingredients may vary by season',
-            )}
-          </p>
-        </div>
-      </section>
+        </section>
+      </div>
 
       {/* ── Sticky Category Tabs ── */}
       <div className="sticky top-16 md:top-20 z-40 bg-cream border-b border-rice-dark shadow-sm">
-        <div ref={tabsRef} className="flex gap-2 px-4 py-3 overflow-x-auto scrollbar-none">
+        <div ref={tabsRef} className="flex gap-2 px-4 py-3 overflow-x-auto scrollbar-none w-full justify-center mx-auto max-w-5xl">
           {allTabs.map(tab => (
             <button
               key={tab.id}
@@ -116,16 +141,17 @@ export default function Menu() {
       </div>
 
       {/* ── Content ── */}
-      <div className="max-w-3xl mx-auto px-4 md:px-6 py-10 pb-20">
+      <div ref={contentTopRef} />
+      <div className="max-w-5xl mx-auto px-4 md:px-6 py-10 pb-20">
 
         {/* ── Regular Category ── */}
         {activeCat && !showSetMenus && (
           <div>
             {/* Category Header */}
             <div
-              className="relative rounded-2xl overflow-hidden mb-8 p-8 rice-texture"
+              className="relative overflow-hidden mb-8 text-center w-full max-w-3xl md:max-w-4xl mx-auto rounded-3xl p-6 md:p-10 shadow-sm"
               style={{
-                background: 'radial-gradient(ellipse at 60% 40%, #C4623A 0%, #8B3A1A 100%)',
+                background: 'linear-gradient(180deg, rgba(196,98,58,0.95) 0%, rgba(139,58,26,0.95) 100%)',
               }}
             >
               <p className="text-[0.6rem] font-bold tracking-[0.4em] uppercase text-gold/70 mb-2">
@@ -134,7 +160,7 @@ export default function Menu() {
               <h2 className="text-3xl md:text-4xl font-black text-cream mb-3">
                 {activeCat.name[lang]}
               </h2>
-              <p className="text-cream/60 text-sm leading-relaxed max-w-lg">
+<p className="text-cream/60 text-sm leading-relaxed max-w-lg mx-auto">
                 {activeCat.description[lang]}
               </p>
             </div>
@@ -153,9 +179,9 @@ export default function Menu() {
           <div>
             {/* Header */}
             <div
-              className="relative rounded-2xl overflow-hidden mb-8 p-8 rice-texture"
+              className="relative overflow-hidden mb-8 text-center w-full max-w-3xl md:max-w-4xl mx-auto rounded-3xl p-6 md:p-10 shadow-sm"
               style={{
-                background: 'radial-gradient(ellipse at 60% 40%, #C4623A 0%, #8B3A1A 100%)',
+                background: 'linear-gradient(180deg, rgba(196,98,58,0.95) 0%, rgba(139,58,26,0.95) 100%)',
               }}
             >
               <p className="text-[0.6rem] font-bold tracking-[0.4em] uppercase text-gold/70 mb-2">
@@ -164,7 +190,7 @@ export default function Menu() {
               <h2 className="text-3xl md:text-4xl font-black text-cream mb-3">
                 {t('Mâm Cơm Nhà', 'Family Table Sets')}
               </h2>
-              <p className="text-cream/60 text-sm leading-relaxed max-w-lg">
+<p className="text-cream/60 text-sm leading-relaxed max-w-lg mx-auto">
                 {t(
                   'Mâm Cơm Nhà theo gợi ý của Dāna dành cho Nhóm từ 2–4 người. Mỗi Mâm Cơm mang một tinh thần khác nhau.',
                   'Dāna\'s curated family set menus for groups of 2–4. Each set carries a unique regional spirit.',

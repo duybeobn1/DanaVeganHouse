@@ -63,12 +63,30 @@ export default function About() {
   return (
     <main>
       {/* ── Hero ── */}
-      <section
-        className="relative pt-20 pb-20 md:pt-28 md:pb-28 rice-texture overflow-hidden"
-        style={{
-          background: 'radial-gradient(ellipse at 40% 60%, #C4623A 0%, #8B3A1A 55%, #4A1E0A 100%)',
-        }}
-      >
+      <section className="relative min-h-[56vh] md:min-h-[64vh] pt-20 md:pt-28 pb-16 md:pb-20 overflow-hidden flex items-center justify-center">
+        {/* Background image */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'url(/images/old_house_rooftop.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+          }}
+        />
+        {/* Subtle rice-grain texture */}
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage: 'url(/images/rice_grain_with_dana_logo.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+          }}
+        />
+        {/* Dark vignette for readability */}
+        <div className="absolute inset-0 bg-black/35" />
+
         <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
           <p className="text-xs font-bold tracking-[0.4em] uppercase text-gold/80 mb-4">
             {t('Câu Chuyện Của Chúng Tôi', 'Our Story')}
@@ -81,7 +99,7 @@ export default function About() {
             <div className="w-1.5 h-1.5 rounded-full bg-gold" />
             <div className="h-px w-12 bg-cream/30" />
           </div>
-          <p className="text-cream/70 text-base max-w-xl mx-auto leading-relaxed">
+          <p className="text-cream/80 text-base max-w-xl mx-auto leading-relaxed">
             {t(
               'Dāna Vegan House thấp thoáng hơi hướng của một nhà hàng chay có concept phong cách khác biệt, nhưng mang trong mình cốt lõi tinh thần và văn hóa Việt Nam.',
               'Dāna Vegan House carries the spirit of a distinctly styled vegan restaurant, while holding at its core the essence of Vietnamese spirit and culture.',
@@ -178,28 +196,53 @@ export default function About() {
             </h2>
           </div>
 
-          {/* ★ Restaurant interior photos from brand moodboard (Image 2): */}
-          {/* bamboo ceiling: /images/restaurant-ceiling.jpg */}
-          {/* bamboo walls: /images/bamboo-walls.jpg */}
-          {/* cocktail coasters: /images/cocktail-coasters.jpg */}
+          {/* Restaurant gallery with actual images */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
             {[
-              { src: '/images/restaurant-ceiling.jpg', label: t('Trần Tre', 'Bamboo Ceiling') },
-              { src: '/images/bamboo-walls.jpg', label: t('Vách Gỗ', 'Wooden Walls') },
-              { src: '/images/cocktail-coasters.jpg', label: t('Lót Li Đāna', 'Dāna Coasters') },
+              { src: '/images/old_house_rooftop.png', label: t('Mái Nhà Cổ', 'Old House Roof') },
+              { src: '/images/old_house_decoration.png', label: t('Trang Trí Nhà Cổ', 'Old House Decor') },
+              { src: '/images/traditional_vietnamese_items.png', label: t('Đồ Vật Truyền Thống', 'Traditional Items') },
             ].map(({ src, label }) => (
               <div
                 key={src}
-                className="aspect-video rounded-2xl overflow-hidden relative bg-earth/60 flex items-center justify-center"
+                className="aspect-video rounded-2xl overflow-hidden relative group"
               >
                 <img
                   src={src}
                   alt={label}
-                  className="w-full h-full object-cover"
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
-                <span className="absolute text-cream/30 text-xs font-bold tracking-wider uppercase">
-                  {label}
+                {/* Dark overlay on hover */}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <span className="absolute bottom-0 left-0 right-0 p-3 text-center">
+                  <span className="text-cream text-xs font-bold tracking-wider uppercase bg-black/50 px-3 py-1 rounded-full">
+                    {label}
+                  </span>
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Small items showcase */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {[
+              { src: '/images/small_items_rice_bowl_spoon.png', label: t('Gạo & Cơm', 'Rice & Bowls') },
+              { src: '/images/rice_grain_with_dana_logo.png', label: t('Hạt Gạo Dāna', 'Dāna Rice Grains') },
+            ].map(({ src, label }) => (
+              <div
+                key={src}
+                className="aspect-[16/9] rounded-2xl overflow-hidden relative group"
+              >
+                <img
+                  src={src}
+                  alt={label}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <span className="absolute bottom-4 left-4">
+                  <span className="text-gold text-xs font-bold tracking-wider uppercase">
+                    {label}
+                  </span>
                 </span>
               </div>
             ))}

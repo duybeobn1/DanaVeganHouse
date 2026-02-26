@@ -10,15 +10,38 @@ export default function Home() {
       {/* ══════════════════════════════════════════════
           1. HERO
       ══════════════════════════════════════════════ */}
-      <section
-        className="relative min-h-screen flex items-center justify-center overflow-hidden rice-texture"
-        style={{
-          background: 'radial-gradient(ellipse at 60% 40%, #C4623A 0%, #8B3A1A 50%, #4A1E0A 100%)',
-        }}
-      >
-        {/* Background pattern */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden rice-texture">
+        {/* Background image with gradient overlay */}
         <div
-          className="absolute inset-0 opacity-5"
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'url(/images/rice_flower.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+          }}
+        />
+
+        {/* Gradient overlay for blending - lighter to show image */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'linear-gradient(135deg, rgba(74, 30, 10, 0.3) 0%, rgba(196, 98, 58, 0.25) 50%, rgba(74, 30, 10, 0.35) 100%)',
+            mixBlendMode: 'multiply',
+          }}
+        />
+
+        {/* Radial gradient vignette for depth */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'radial-gradient(ellipse at 60% 40%, rgba(74, 30, 10, 0.1) 0%, rgba(74, 30, 10, 0.3) 60%, rgba(74, 30, 10, 0.5) 100%)',
+          }}
+        />
+
+        {/* Rice grain texture pattern */}
+        <div
+          className="absolute inset-0 opacity-10"
           style={{
             backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,248,236,0.3) 40px, rgba(255,248,236,0.3) 41px), repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,248,236,0.3) 40px, rgba(255,248,236,0.3) 41px)',
           }}
@@ -48,8 +71,12 @@ export default function Home() {
 
           {/* Brand name */}
           <div className="fade-in-up-3">
-            <p className="text-4xl md:text-5xl font-black text-cream tracking-tight">dāna</p>
-            <p className="text-xs font-bold tracking-[0.5em] uppercase text-cream/50 mt-1">VEGAN HOUSE</p>
+            <img
+              src="/images/house_of_vegan_logo.png"
+              alt="House of Vegan Logo"
+              className="h-16 md:h-20 mb-2 opacity-90 object-contain mx-auto"
+            />
+            <p className="text-xs font-bold tracking-[0.5em] uppercase text-cream/50 mt-1">Dāna Vegan House</p>
           </div>
 
           {/* Taglines */}
@@ -85,12 +112,18 @@ export default function Home() {
           </div>
         </div>
       </section>
-      {/* ═
-      {/* ══════════════════════════════════════════════
-          2. PHILOSOPHY STRIP
-      ══════════════════════════════════════════════ */}
-      <section className="bg-earth py-8">
-        <div className="max-w-5xl mx-auto px-6 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-0">
+      <section className="relative py-8" style={{ backgroundColor: '#5C3317' }}>
+        {/* Background image overlay */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'url(/images/rice_grain_with_dana_logo.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            opacity: '0.08',
+          }}
+        />
+        <div className="relative z-10 max-w-5xl mx-auto px-6 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-0">
           {[
             {
               icon: '🌾',
@@ -129,31 +162,40 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           {/* Left: restaurant interior photo (from brand moodboard Image 2) */}
           <div className="order-2 md:order-1">
-            {/* ★ DROP PHOTO HERE: replace this div with <img src="/images/restaurant-interior.jpg" .../> */}
-            {/* Suggested photos from brand moodboard: bamboo ceiling or wall panels */}
             <div
-              className="relative rounded-2xl overflow-hidden flex items-center justify-center aspect-square max-w-md mx-auto"
-              style={{ background: 'radial-gradient(circle at center, #C4623A 0%, #8B3A1A 70%)' }}
+              className="relative rounded-2xl overflow-hidden max-w-md mx-auto"
+              style={{ aspectRatio: '1/1' }}
             >
-              {/* Rice grain pattern */}
-              <div className="absolute inset-0 rice-texture" />
-              {/* Central text art — replace with actual photo when available */}
-              <div className="relative z-10 text-center p-8">
-                <p className="text-[6rem] md:text-[8rem] font-black text-cream/15 leading-none select-none">
+              {/* Background image */}
+              <img
+                src="/images/old_house_rooftop.png"
+                alt="Ngôi nhà cổ Kho Gạo"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              {/* Dark overlay for text readability */}
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: 'linear-gradient(180deg, rgba(74, 30, 10, 0.3) 0%, rgba(74, 30, 10, 0.7) 100%)',
+                }}
+              />
+              {/* Content overlay */}
+              <div className="relative z-10 text-center p-8 flex flex-col items-center justify-center h-full">
+                <p className="text-[6rem] md:text-[8rem] font-black text-cream/20 leading-none select-none">
                   1936
                 </p>
-                <p className="text-cream text-xl font-bold mt-2 tracking-wider">
+                <div className="w-12 h-0.5 bg-gold/60 mx-auto mt-4 mb-3" />
+                <p className="text-cream text-xl font-bold tracking-wider">
                   {t('KHO GẠO', 'RICE WAREHOUSE')}
                 </p>
                 <p className="text-cream/60 text-xs tracking-[0.3em] uppercase mt-1">
                   {t('Thành Thăng Long', 'Thăng Long Citadel')}
                 </p>
-                <div className="mt-4 w-12 h-0.5 bg-gold/60 mx-auto" />
-                <p className="text-cream/50 text-xs mt-3 leading-relaxed max-w-[180px] mx-auto">
-                  {t(
-                    'Ngôi nhà Bắc Bộ cổ gần 100 tuổi từ Nam Định',
-                    'A nearly 100-year-old Northern Vietnamese house from Nam Định',
-                  )}
+                <p className="text-cream/70 text-xs mt-4 leading-relaxed max-w-[180px]">
+                {t(
+                  'Ngôi nhà Bắc Bộ cổ gần 100 tuổi từ Nam Định',
+                  'A nearly 100-year-old Northern Vietnamese house from Nam Định',
+                )}
                 </p>
               </div>
             </div>
@@ -201,7 +243,7 @@ export default function Home() {
           4. FEATURED DISHES
       ══════════════════════════════════════════════ */}
       <section className="bg-rice py-20 md:py-28">
-        <div className="max-w-6xl mx-auto px-6">
+        <div className="relative z-10 max-w-6xl mx-auto px-6">
           <div className="text-center mb-14">
             <p className="text-xs font-bold tracking-[0.3em] uppercase text-brand mb-3">
               {t('Gợi Ý Của Bếp', "Chef's Recommendations")}
@@ -263,6 +305,17 @@ export default function Home() {
           5. BẢN ĐỒ ẨM THỰC CHAY
       ══════════════════════════════════════════════ */}
       <section className="py-20 md:py-28 relative overflow-hidden" style={{ backgroundColor: '#3D2210' }}>
+        {/* Background image with overlay */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'url(/images/rice_grain_with_dana_logo.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+            opacity: '0.15',
+          }}
+        />
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-14">
             <p className="text-xs font-bold tracking-[0.3em] uppercase text-gold mb-3">
@@ -314,13 +367,24 @@ export default function Home() {
       {/* ══════════════════════════════════════════════
           6. GIẢI KHÁT TEASER
       ══════════════════════════════════════════════ */}
-      <section
-        className="relative py-24 md:py-32 rice-texture overflow-hidden"
-        style={{
-          background: 'radial-gradient(ellipse at 30% 50%, #C4623A 0%, #8B3A1A 60%, #5C2D0A 100%)',
-        }}
-      >
-        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+      <section className="relative py-24 md:py-32 rice-texture overflow-hidden">
+        {/* Background image with gradient overlay */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'url(/images/branding_image_with_cups_of_beverage_and_logo.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+        {/* Gradient overlay */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'radial-gradient(ellipse at 30% 50%, rgba(196, 98, 58, 0.9) 0%, rgba(139, 58, 26, 0.95) 60%, rgba(92, 45, 10, 1) 100%)',
+          }}
+        />
+        <div className="relative z-10 max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           {/* Text */}
           <div>
             <p className="text-xs font-bold tracking-[0.4em] uppercase text-gold/80 mb-4">
@@ -434,7 +498,18 @@ export default function Home() {
       {/* ══════════════════════════════════════════════
           8. LOCATION / CTA
       ══════════════════════════════════════════════ */}
-      <section className="bg-forest py-20 md:py-28">
+      <section className="py-20 md:py-28 relative overflow-hidden" style={{ backgroundColor: '#2A5C34' }}>
+        {/* Background image with parallax */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'url(/images/farmers_yellow.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+            opacity: '0.25',
+          }}
+        />
         <div className="max-w-5xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           {/* Info */}
           <div>
@@ -489,21 +564,26 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Map placeholder */}
+          {/* Map card with blended background image */}
           <div
             className="rounded-2xl overflow-hidden aspect-square relative"
-            style={{ backgroundColor: '#1E4426' }}
+            style={{
+              backgroundImage: 'url(/images/a-vegan-restaurant-of.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
           >
+            <div className="absolute inset-0 bg-black/30" />
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
               <p className="text-6xl mb-4">🏮</p>
               <p className="text-cream font-black text-xl">12 Đông Thái</p>
-              <p className="text-cream/60 text-sm mt-1">Hàng Buồm, Hoàn Kiếm</p>
-              <p className="text-cream/60 text-sm">Hà Nội</p>
+              <p className="text-cream/80 text-sm mt-1">Hàng Buồm, Hoàn Kiếm</p>
+              <p className="text-cream/80 text-sm">Hà Nội</p>
               <a
                 href="https://www.google.com/maps/place/Dana+Vegan+House+-+Nh%C3%A0+Chay+Dana/@21.0362865,105.850389,17z/data=!4m6!3m5!1s0x3135ab16938eb5e7:0x5d8527ec7fb235f4!8m2!3d21.0362884!4d105.8529741!16s%2Fg%2F11l6s__8_5?entry=ttu&g_ep=EgoyMDI2MDIyMi4wIKXMDSoASAFQAw%3D%3D"
                 target="_blank"
                 rel="noreferrer"
-                className="mt-6 text-xs font-bold tracking-widest uppercase text-gold border border-gold/40 px-5 py-2 rounded-full hover:bg-gold hover:text-earth transition-all duration-200"
+                className="mt-6 text-xs font-bold tracking-widest uppercase text-gold border border-gold/50 px-5 py-2 rounded-full hover:bg-gold hover:text-earth transition-all duration-200"
               >
                 Google Maps ↗
               </a>

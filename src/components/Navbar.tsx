@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const { lang, setLang, t } = useLanguage()
+  const location = useLocation()
+  const pathname = location.pathname
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60)
@@ -20,13 +22,19 @@ export default function Navbar() {
     { to: '/contact', label: t('Liên Hệ', 'Contact') },
   ]
 
-  const baseText  = scrolled ? 'text-earth' : 'text-cream'
-  const hoverText = scrolled ? 'hover:text-brand' : 'hover:text-gold'
+  const isMenuPage = pathname === '/menu'
+  // Use green tones on Menu page to match banner
+  const baseText  = isMenuPage || scrolled ? 'text-earth' : 'text-cream'
+  const hoverText = isMenuPage || scrolled ? 'hover:text-forest' : 'hover:text-gold'
+  const bgColor   = scrolled ? 'bg-cream' : isMenuPage ? 'bg-cream/95' : 'bg-transparent'
+  const brandColor = isMenuPage ? '#2A5C34' : scrolled ? '#E8A800' : '#FFF8EC'
+  const activeLinkColor = isMenuPage ? 'text-forest' : 'text-brand'
+  const menuPageCtaButton = isMenuPage ? 'bg-forest text-cream hover:bg-forest-mid' : 'bg-brand text-cream hover:bg-brand-dark'
 
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-cream shadow-sm' : 'bg-transparent'
+        bgColor + (scrolled ? ' shadow-sm' : '')
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16 md:h-20">
@@ -38,14 +46,14 @@ export default function Navbar() {
             style={{
               fontFamily: '"Nunito", "Be Vietnam Pro", sans-serif',
               fontWeight: 900,
-              color: scrolled ? '#E8A800' : '#FFF8EC',
+              color: brandColor,
             }}
           >
             dāna
           </span>
           <span
             className={`text-[0.5rem] font-bold tracking-[0.35em] uppercase transition-colors duration-300 ${
-              scrolled ? 'text-earth' : 'text-cream/70'
+              isMenuPage || scrolled ? 'text-earth' : 'text-cream/70'
             }`}
           >
             VEGAN HOUSE
@@ -59,10 +67,10 @@ export default function Navbar() {
               key={to}
               to={to}
               end={to === '/'}
-              className={({ isActive }) =>
+            className={({ isActive }) =>
                 `text-sm font-semibold tracking-wider uppercase transition-colors duration-200 ${
                   isActive
-                    ? scrolled ? 'text-brand' : 'text-gold'
+                    ? isMenuPage ? 'text-forest' : 'text-gold'
                     : `${baseText} ${hoverText}`
                 }`
               }
@@ -78,7 +86,7 @@ export default function Navbar() {
           <button
             onClick={() => setLang(lang === 'vi' ? 'en' : 'vi')}
             className={`text-xs font-bold tracking-widest uppercase border px-3 py-1 rounded-full transition-all duration-200 ${
-              scrolled
+              isMenuPage || scrolled
                 ? 'border-earth/40 text-earth hover:border-brand hover:text-brand'
                 : 'border-cream/50 text-cream/80 hover:border-cream hover:text-cream'
             }`}
@@ -90,9 +98,9 @@ export default function Navbar() {
           <a
             href="tel:0828744931"
             className={`text-xs font-bold tracking-widest uppercase px-5 py-2 rounded-full transition-all duration-200 ${
-              scrolled
-                ? 'bg-brand text-cream hover:bg-brand-dark'
-                : 'bg-cream text-earth hover:bg-rice'
+              isMenuPage || scrolled
+                ? 'bg-forest text-cream hover:bg-forest-mid'
+                : 'bg-brand text-cream hover:bg-brand-dark'
             }`}
           >
             {t('Đặt Bàn', 'Reserve')}
@@ -105,21 +113,17 @@ export default function Navbar() {
           onClick={() => setMenuOpen(v => !v)}
           aria-label="Menu"
         >
-          <span
-            className={`block h-[2px] w-6 rounded transition-all duration-300 ${
-              scrolled ? 'bg-earth' : 'bg-cream'
-            } ${menuOpen ? 'rotate-45 translate-y-[7px]' : ''}`}
-          />
-          <span
-            className={`block h-[2px] w-6 rounded transition-all duration-300 ${
-              scrolled ? 'bg-earth' : 'bg-cream'
-            } ${menuOpen ? 'opacity-0' : ''}`}
-          />
-          <span
-            className={`block h-[2px] w-6 rounded transition-all duration-300 ${
-              scrolled ? 'bg-earth' : 'bg-cream'
-            } ${menuOpen ? '-rotate-45 -translate-y-[7px]' : ''}`}
-          />
+          {(() => {
+            const barBase = (isMenuPage || scrolled) ? 'bg-earth' : 'bg-cream'
+            const barCommon = 'block h-[2px] w-6 rounded transition-all duration-300'
+            return (
+              <>
+                <span className={`${barCommon} ${barBase} ${menuOpen ? 'rotate-45 translate-y-[7px]' : ''}`} />
+                <span className={`${barCommon} ${barBase} ${menuOpen ? 'opacity-0' : ''}`} />
+                <span className={`${barCommon} ${barBase} ${menuOpen ? '-rotate-45 -translate-y-[7px]' : ''}`} />
+              </>
+            )
+          })()}
         </button>
       </div>
 
@@ -135,9 +139,9 @@ export default function Navbar() {
               key={to}
               to={to}
               end={to === '/'}
-              className={({ isActive }) =>
+            className={({ isActive }) =>
                 `text-sm font-semibold tracking-wider uppercase py-2 border-b border-rice-dark transition-colors ${
-                  isActive ? 'text-brand' : 'text-earth hover:text-brand'
+                  isActive ? activeLinkColor : 'text-earth hover:text-brand'
                 }`
               }
               onClick={() => setMenuOpen(false)}
@@ -148,13 +152,15 @@ export default function Navbar() {
           <div className="flex items-center gap-3 pt-2">
             <button
               onClick={() => { setLang(lang === 'vi' ? 'en' : 'vi'); setMenuOpen(false) }}
-              className="text-xs font-bold tracking-widest uppercase border border-earth/40 text-earth px-3 py-1 rounded-full hover:border-brand hover:text-brand transition-colors"
+              className={`text-xs font-bold tracking-widest uppercase border px-3 py-1 rounded-full hover:border-brand hover:text-brand transition-colors ${
+                isMenuPage ? 'border-earth/40 text-earth' : 'border-earth/40 text-earth'
+              }`}
             >
               {lang === 'vi' ? 'EN' : 'VI'}
             </button>
             <a
               href="tel:0828744931"
-              className="text-xs font-bold tracking-widest uppercase bg-brand text-cream px-5 py-2 rounded-full hover:bg-brand-dark transition-colors"
+              className={`text-xs font-bold tracking-widest uppercase px-5 py-2 rounded-full transition-colors ${menuPageCtaButton}`}
               onClick={() => setMenuOpen(false)}
             >
               {t('Đặt Bàn', 'Reserve')}

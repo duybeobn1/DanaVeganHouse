@@ -117,3 +117,13 @@ body {
 
 /* MENU ITEM HOVER */
 .menu-item:hover { background: rgba(196,98,58,0.04); }
+
+/* FULL BLEED utility for edge-to-edge sections */
+.full-bleed {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+}
