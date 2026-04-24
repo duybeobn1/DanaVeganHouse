@@ -84,7 +84,7 @@ export default function Contact() {
                   <span className="font-semibold text-earth">
                     {t('Chủ Nhật', 'Sunday')}
                   </span>
-                  <span>10:00 – 22:00</span>
+                  <span>11:00 – 22:00</span>
                 </div>
               </div>
             </div>
