@@ -532,7 +532,7 @@ export default function Home() {
                 <span className="text-forest-light text-lg mt-0.5">🕙</span>
                 <div>
                   <p className="text-cream font-semibold">{t('Giờ Mở Cửa', 'Opening Hours')}</p>
-                  <p>{t('Thứ 2 – Chủ Nhật · 10:00 – 22:00', 'Mon – Sun · 10:00 – 22:00')}</p>
+                  <p>{t('Thứ 2 – Chủ Nhật · 11:00 – 22:00', 'Mon – Sun · 11:00 – 22:00')}</p>
                 </div>
               </div>
               <div className="flex gap-4">

@@ -2,7 +2,7 @@ import { useLanguage } from '../context/LanguageContext'
 import { Link } from 'react-router-dom'
 
 export default function Contact() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
 
   return (
     <main>
@@ -72,13 +72,13 @@ export default function Contact() {
                   <span className="font-semibold text-earth">
                     {t('Thứ 2 – Thứ 6', 'Mon – Fri')}
                   </span>
-                  <span>10:00 – 22:00</span>
+                  <span>11:00 – 22:00</span>
                 </div>
                 <div className="flex justify-between border-b border-rice-dark pb-2">
                   <span className="font-semibold text-earth">
                     {t('Thứ 7', 'Saturday')}
                   </span>
-                  <span>10:00 – 22:00</span>
+                  <span>11:00 – 22:00</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="font-semibold text-earth">
@@ -101,7 +101,51 @@ export default function Contact() {
                 0828.744.931
               </a>
               <p className="text-earth/50 text-sm mt-2">
-                {t('Gọi hoặc nhắn tin để đặt bàn', 'Call or text to reserve a table')}
+                {lang === 'vi' ? (
+                  <>
+                    Gọi, nhắn tin hoặc liên hệ trang{' '}
+                    <a
+                      href="https://www.facebook.com/danaveganhouse"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline hover:text-earth transition-colors"
+                    >
+                      Facebook
+                    </a>
+                    {' / '}
+                    <a
+                      href="https://www.instagram.com/danaveganhouse/"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline hover:text-earth transition-colors"
+                    >
+                      Instagram
+                    </a>{' '}
+                    để đặt bàn
+                  </>
+                ) : (
+                  <>
+                    Call, text, or contact us via our{' '}
+                    <a
+                      href="https://www.facebook.com/danaveganhouse"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline hover:text-earth transition-colors"
+                    >
+                      Facebook
+                    </a>
+                    {' / '}
+                    <a
+                      href="https://www.instagram.com/danaveganhouse/"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline hover:text-earth transition-colors"
+                    >
+                      Instagram
+                    </a>{' '}
+                    page to reserve a table
+                  </>
+                )}
               </p>
             </div>
 
@@ -112,10 +156,10 @@ export default function Contact() {
               </p>
               <div className="flex flex-wrap gap-3">
                 {[
-                  { label: 'Facebook', href: 'https://facebook.com' },
-                  { label: 'Instagram', href: 'https://instagram.com' },
-                  { label: 'TripAdvisor', href: '#' },
-                  { label: 'HappyCow', href: '#' },
+                  { label: 'Facebook', href: 'https://www.facebook.com/danaveganhouse' },
+                  { label: 'Instagram', href: 'https://www.instagram.com/danaveganhouse/' },
+                  { label: 'TripAdvisor', href: 'https://www.tripadvisor.com.vn/Restaurant_Review-g293924-d27522960-Reviews-Dana_Vegan_House_Nha_Chay_Dana-Hanoi.html' },
+                  { label: 'HappyCow', href: 'https://www.happycow.net/reviews/dana-vegan-house-hanoi-401582' },
                   { label: 'Google Maps', href: 'https://www.google.com/maps/place/Dana+Vegan+House+-+Nh%C3%A0+Chay+Dana/@21.0362865,105.850389,17z/data=!4m6!3m5!1s0x3135ab16938eb5e7:0x5d8527ec7fb235f4!8m2!3d21.0362884!4d105.8529741!16s%2Fg%2F11l6s__8_5?entry=ttu&g_ep=EgoyMDI2MDIyMi4wIKXMDSoASAFQAw%3D%3D' },
                 ].map(({ label, href }) => (
                   <a
@@ -184,11 +228,11 @@ export default function Contact() {
                 )}
               </p>
               <div className="flex gap-2">
-                <a href="https://instagram.com" target="_blank" rel="noreferrer"
+                <a href="https://www.instagram.com/danaveganhouse/" target="_blank" rel="noreferrer"
                   className="text-xs font-bold tracking-wider uppercase text-gold border border-gold/30 px-4 py-2 rounded-full hover:bg-gold hover:text-earth transition-colors">
                   Instagram
                 </a>
-                <a href="https://facebook.com" target="_blank" rel="noreferrer"
+                <a href="https://www.facebook.com/danaveganhouse" target="_blank" rel="noreferrer"
                   className="text-xs font-bold tracking-wider uppercase text-gold border border-gold/30 px-4 py-2 rounded-full hover:bg-gold hover:text-earth transition-colors">
                   Facebook
                 </a>

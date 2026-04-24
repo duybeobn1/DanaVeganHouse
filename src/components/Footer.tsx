@@ -49,11 +49,11 @@ export default function Footer() {
             )}
           </p>
           <div className="mt-6 flex gap-4">
-            <a href="https://facebook.com" target="_blank" rel="noreferrer"
+            <a href="https://www.facebook.com/danaveganhouse" target="_blank" rel="noreferrer"
               className="w-9 h-9 rounded-full border border-cream/20 flex items-center justify-center text-cream/50 hover:border-cream/60 hover:text-cream transition-colors text-sm font-bold">
               f
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noreferrer"
+            <a href="https://www.instagram.com/danaveganhouse/" target="_blank" rel="noreferrer"
               className="w-9 h-9 rounded-full border border-cream/20 flex items-center justify-center text-cream/50 hover:border-cream/60 hover:text-cream transition-colors text-xs font-bold">
               IG
             </a>
@@ -79,7 +79,7 @@ export default function Footer() {
               {t('Giờ hoạt động', 'Opening Hours')}
             </p>
             <p>{t('Thứ 2 – Chủ Nhật', 'Mon – Sun')}</p>
-            <p>10:00 – 22:00</p>
+            <p>11:00 – 22:00</p>
           </div>
           <a href="tel:0828744931"
             className="inline-block mt-4 text-sm font-bold text-gold hover:text-gold-light transition-colors">
