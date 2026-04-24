@@ -22,7 +22,7 @@ export default function Footer() {
           LÒNG RỘNG LƯỢNG — CHAY HẠNH PHÚC
         </p>
         <p className="text-cream/70 text-sm tracking-[0.3em] uppercase mt-1">
-          Generosity · Happy Vegan
+          Happy Deeds · Happy Eat
         </p>
       </div>
 
