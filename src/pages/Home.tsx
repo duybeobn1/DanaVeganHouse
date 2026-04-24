@@ -84,7 +84,7 @@ export default function Home() {
             {t('Nhà Chay Đổi Mới', 'New Generation Vegan House')}
           </p>
           <p className="text-xs tracking-[0.25em] uppercase text-cream/50 mt-2 fade-in-up-4">
-            {t('Lòng Rộng Lượng · Chay Hạnh Phúc', 'Generosity · Happy Vegan')}
+            {t('Lòng Rộng Lượng · Chay Hạnh Phúc', 'Happy Deeds · Happy Eat')}
           </p>
 
           {/* CTAs */}
