@@ -36,6 +36,7 @@
   --default-font-family: "Be Vietnam Pro", sans-serif;
   --font-display: "Be Vietnam Pro", sans-serif;
   --font-logo: "Nunito", "Be Vietnam Pro", sans-serif;
+  --font-display-wide: "Space Grotesk", "Be Vietnam Pro", sans-serif;
 }
 
 * { box-sizing: border-box; }

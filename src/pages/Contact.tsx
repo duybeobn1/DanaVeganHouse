@@ -31,8 +31,8 @@ export default function Contact() {
         <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(42, 92, 52, 0.9) 0%, rgba(20, 48, 24, 0.95) 60%, rgba(12, 32, 15, 1) 100%)' }} />
         <div className="max-w-3xl mx-auto px-6 text-center relative z-10">
           <p className="text-xs font-bold tracking-[0.4em] uppercase text-forest-light mb-4">{t('Ghé Thăm Chúng Tôi', 'Visit Us')}</p>
-          <h1 className="text-5xl md:text-7xl font-black text-cream leading-none mb-4">{t('LIÊN HỆ', 'CONTACT')}</h1>
-          <p className="text-cream/60 text-sm">12 Đông Thái · Hà Nội</p>
+          <h1 className="text-5xl md:text-7xl font-black text-cream leading-none mb-4" style={{ fontFamily: 'var(--font-display-wide)' }}>{t('LIÊN HỆ', 'CONTACT')}</h1>
+          <p className="text-cream/60 text-sm">12 Phố Đông Thái, Phường Hoàn Kiếm, TP.Hà Nội</p>
         </div>
       </section>
 
@@ -46,9 +46,7 @@ export default function Contact() {
               <div>
                 <p className="text-xs font-bold tracking-[0.3em] uppercase text-brand mb-4">{t('Địa Chỉ', 'Address')}</p>
                 <address className="not-italic text-earth text-base leading-loose">
-                  <p className="font-black text-xl text-earth">12 Đông Thái</p>
-                  <p className="text-earth-mid">Hàng Buồm, Hoàn Kiếm</p>
-                  <p className="text-earth-mid">Hà Nội, Việt Nam</p>
+                  <p className="font-black text-xl text-earth">12 Phố Đông Thái, Phường Hoàn Kiếm, TP.Hà Nội</p>
                 </address>
                 <a href="https://www.google.com/maps/place/Dana+Vegan+House" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 mt-4 text-xs font-bold tracking-wider uppercase text-forest hover:text-forest-mid transition-colors">
                   {t('Xem trên Google Maps', 'Open in Google Maps')} ↗
@@ -125,8 +123,8 @@ export default function Contact() {
               <div className="rounded-[2rem] aspect-video relative overflow-hidden shadow-premium-dark" style={{ backgroundImage: 'url(/images/a-vegan-restaurant-of.png)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
                 <div className="absolute inset-0 bg-black/35" />
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-                  <p className="text-cream font-black text-xl md:text-2xl">12 Đông Thái</p>
-                  <p className="text-cream/80 text-sm md:text-base mt-1">Hàng Buồm, Hoàn Kiếm · Hà Nội</p>
+                  <p className="text-cream font-black text-xl md:text-2xl">12 Phố Đông Thái, Phường Hoàn Kiếm</p>
+                  <p className="text-cream/80 text-sm md:text-base mt-1">TP.Hà Nội</p>
                   <a href="https://www.google.com/maps/place/Dana+Vegan+House" target="_blank" rel="noreferrer"
                     className="mt-5 text-xs font-bold tracking-widest uppercase text-gold border border-gold/50 px-5 py-2 rounded-full hover:bg-gold hover:text-earth transition-all duration-300 btn-magnetic">
                     {t('Chỉ Đường', 'Get Directions')} ↗

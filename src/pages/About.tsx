@@ -112,7 +112,7 @@ export default function About() {
           <p className="text-xs font-bold tracking-[0.4em] uppercase text-gold/80 mb-4">
             {t('Câu Chuyện Của Chúng Tôi', 'Our Story')}
           </p>
-          <h1 className="text-5xl md:text-7xl font-black text-cream leading-none mb-6">
+          <h1 className="text-5xl md:text-7xl font-black text-cream leading-none mb-6" style={{ fontFamily: 'var(--font-display-wide)' }}>
             {t('NHÀ CHAY\nĐỔI MỚI', 'VEGAN\nHOUSE')}
           </h1>
           <p className="text-cream/80 text-base max-w-xl mx-auto leading-relaxed">
@@ -128,7 +128,7 @@ export default function About() {
       <section className="bg-cream py-32 md:py-40">
         <div className="max-w-4xl mx-auto px-6">
           <Reveal className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-black text-earth">{t('Cuộc Cách Mạng\nĂn Chay', 'The Vegan\nRevolution')}</h2>
+            <h2 className="text-4xl md:text-5xl font-black text-earth" style={{ fontFamily: 'var(--font-display-wide)' }}>{t('Cuộc Cách Mạng\nĂn Chay', 'The Vegan\nRevolution')}</h2>
           </Reveal>
           <Reveal delay={0.1}>
             <div className="bg-rice rounded-[2rem] p-8 md:p-12 shadow-premium">
@@ -144,7 +144,7 @@ export default function About() {
       <section className="bg-rice py-20 md:py-28">
         <div className="max-w-5xl mx-auto px-6">
         <div className="text-center mb-14">
-          <h2 className="text-4xl md:text-5xl font-black text-earth">
+          <h2 className="text-4xl md:text-5xl font-black text-earth" style={{ fontFamily: 'var(--font-display-wide)' }}>
             {t('Những Trang Câu Chuyện', 'Our Story Chapters')}
           </h2>
         </div>
@@ -176,7 +176,7 @@ export default function About() {
       <section className="py-32 md:py-40" style={{ backgroundColor: '#3D2210' }}>
         <div className="max-w-5xl mx-auto px-6">
           <Reveal className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-black text-cream">{t('Những Điều Thú Vị\nTại Dāna', 'Unique Features\nAt Dāna')}</h2>
+            <h2 className="text-4xl md:text-5xl font-black text-cream" style={{ fontFamily: 'var(--font-display-wide)' }}>{t('Những Điều Thú Vị\nTại Dāna', 'Unique Features\nAt Dāna')}</h2>
           </Reveal>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">

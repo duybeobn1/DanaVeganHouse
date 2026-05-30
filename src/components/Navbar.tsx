@@ -45,7 +45,6 @@ export default function Navbar() {
   const isMenuPage = pathname === '/menu'
   const atTop = !scrolled
 
-  const brandColor = isMenuPage ? '#2A5C34' : scrolled ? '#E8A800' : '#FFF8EC'
   const textDark = isMenuPage ? 'text-forest' : 'text-brand'
 
   return (
@@ -71,20 +70,8 @@ export default function Navbar() {
           style={scrolled || !atTop ? { maxWidth: '1280px', margin: '0 auto' } : {}}
         >
           {/* ── Logo ── */}
-          <Link to="/" className="flex flex-col items-center leading-none shrink-0" onClick={() => setMenuOpen(false)}>
-            <span
-              className="text-2xl md:text-3xl tracking-tight"
-              style={{ fontFamily: '"Nunito", "Be Vietnam Pro", sans-serif', fontWeight: 900, color: brandColor }}
-            >
-              dāna
-            </span>
-            <span
-              className={`text-[0.45rem] md:text-[0.5rem] font-bold tracking-[0.35em] uppercase transition-colors duration-300 ${
-                isMenuPage || scrolled ? 'text-earth' : 'text-cream/70'
-              }`}
-            >
-              VEGAN HOUSE
-            </span>
+          <Link to="/" className="flex items-center shrink-0" onClick={() => setMenuOpen(false)}>
+            <img src="/DANA%20identity-03.png" alt="Dāna" className="h-28 md:h-36 w-auto" />
           </Link>
 
           {/* ── Desktop Nav ── */}
@@ -103,6 +90,7 @@ export default function Navbar() {
                         ? 'text-earth/60 hover:text-earth'
                         : 'text-cream/70 hover:text-cream'
                   }`}
+                  style={{ fontFamily: 'var(--font-display-wide)' }}
                 >
                   <motion.span key={lang} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.1 }}>
                     {t(labelKey[0], labelKey[1])}
@@ -201,6 +189,7 @@ export default function Navbar() {
                       className={`text-2xl font-black tracking-tight transition-colors ${
                         isActive ? 'text-brand' : 'text-earth/60 hover:text-earth'
                       }`}
+                      style={{ fontFamily: 'var(--font-display-wide)' }}
                     >
                       {t(labelKey[0], labelKey[1])}
                     </NavLink>

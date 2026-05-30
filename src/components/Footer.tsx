@@ -64,9 +64,7 @@ export default function Footer() {
             <div>
               <h4 className="text-xs font-bold tracking-[0.3em] uppercase text-cream/40 mb-5">{t('Địa Chỉ & Giờ Mở Cửa', 'Address & Hours')}</h4>
               <address className="not-italic text-sm leading-loose text-cream/70">
-                <p className="font-semibold text-cream">12 Đông Thái</p>
-                <p>Hàng Buồm, Hoàn Kiếm</p>
-                <p>Hà Nội, Việt Nam</p>
+                <p className="font-semibold text-cream">12 Phố Đông Thái, Phường Hoàn Kiếm, TP.Hà Nội</p>
               </address>
               <div className="mt-5 text-sm text-cream/70">
                 <p className="font-semibold text-cream mb-1">{t('Giờ hoạt động', 'Opening Hours')}</p>

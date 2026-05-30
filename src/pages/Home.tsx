@@ -36,7 +36,7 @@ export default function Home() {
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,248,236,0.3) 40px, rgba(255,248,236,0.3) 41px), repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,248,236,0.3) 40px, rgba(255,248,236,0.3) 41px)' }} />
 
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto pt-28 md:pt-36">
-          <h1 className="leading-none tracking-tighter select-none">
+          <h1 className="leading-none tracking-tighter select-none" style={{ fontFamily: 'var(--font-display-wide)' }}>
             <span className="block text-[18vw] md:text-[13rem] font-black text-cream fade-in-up" style={{ lineHeight: 0.88 }}>HOUSE</span>
             <span className="block text-[18vw] md:text-[13rem] font-black text-gold fade-in-up-1" style={{ lineHeight: 0.88 }}>OF</span>
             <span className="block text-[18vw] md:text-[13rem] font-black text-cream fade-in-up-2" style={{ lineHeight: 0.88 }}>VEGAN</span>
@@ -69,7 +69,7 @@ export default function Home() {
           {[
             { icon: Grains, title: t('100% Thuần Chay', '100% Plant-Based'), sub: t('Không thịt · Không hải sản', 'No meat · No seafood') },
             { icon: MapPin, title: t('Nguyên Liệu Địa Phương', 'Local Ingredients'), sub: t('Từ các vùng miền Việt Nam', 'From across Vietnam') },
-            { icon: House, title: t('12 Đông Thái, Hà Nội', '12 Đông Thái, Hanoi'), sub: t('Hàng Buồm · Hoàn Kiếm', 'Hàng Buồm · Hoàn Kiếm') },
+            { icon: House, title: t('12 Phố Đông Thái, TP.Hà Nội', '12 Phố Đông Thái, Hanoi'), sub: t('Phường Hoàn Kiếm', 'Phường Hoàn Kiếm') },
           ].map(({ icon: Icon, title, sub }, i) => (
             <Reveal key={i} delay={i * 0.12} className="flex items-center gap-0 w-full md:w-auto">
               <div className="flex flex-col items-center text-center px-8 flex-1">
@@ -93,7 +93,7 @@ export default function Home() {
               <img src="/images/old_house_rooftop.png" alt="Ngôi nhà cổ Kho Gạo" className="absolute inset-0 w-full h-full object-cover" />
               <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(74, 30, 10, 0.3) 0%, rgba(74, 30, 10, 0.7) 100%)' }} />
               <div className="relative z-10 text-center p-8 flex flex-col items-center justify-center h-full">
-                <p className="text-[6rem] md:text-[8rem] font-black text-cream/20 leading-none select-none">1936</p>
+                <p className="text-[6rem] md:text-[8rem] font-black text-cream/20 leading-none select-none" style={{ fontFamily: 'var(--font-display-wide)' }}>1936</p>
                 <div className="w-12 h-0.5 bg-gold/60 mx-auto mt-4 mb-3" />
                 <p className="text-cream text-xl font-bold tracking-wider">{t('KHO GẠO', 'RICE WAREHOUSE')}</p>
                 <p className="text-cream/60 text-xs tracking-[0.3em] uppercase mt-1">{t('Thành Thăng Long', 'Thăng Long Citadel')}</p>
@@ -103,7 +103,7 @@ export default function Home() {
           </Reveal>
 
           <Reveal delay={0.15} className="order-1 md:order-2">
-            <h2 className="text-4xl md:text-5xl font-black text-earth leading-tight mb-6">{t('Kho Gạo\nThành Thăng Long', 'Rice Warehouse\nof Thăng Long')}</h2>
+            <h2 className="text-4xl md:text-5xl font-black text-earth leading-tight mb-6" style={{ fontFamily: 'var(--font-display-wide)' }}>{t('Kho Gạo\nThành Thăng Long', 'Rice Warehouse\nof Thăng Long')}</h2>
             <div className="w-10 h-0.5 bg-brand mb-6" />
             <p className="text-earth-mid text-base leading-relaxed mb-4">{t('Dāna Vegan House được tái hiện như một Kho Gạo Thành Thăng Long xưa ở khu phố Chợ Gạo trên con phố Đông Thái nhỏ xinh mà tấp nập.', 'Dāna Vegan House is reimagined as an ancient rice warehouse of Thăng Long Citadel, on the charming and bustling Đông Thái Street.')}</p>
             <p className="text-earth-mid text-base leading-relaxed mb-4">{t('Tầng hai là ngôi nhà gỗ ba gian cổ của văn hóa Bắc Bộ gần 100 tuổi được Dana mang về từ Nam Định và phục dựng lại giữa phố cổ Hà Nội.', 'On the second floor sits a nearly century-old three-bay wooden house from Northern Vietnam, brought from Nam Định and rebuilt in the heart of Hanoi\'s Old Quarter.')}</p>
@@ -122,7 +122,7 @@ export default function Home() {
       <section className="bg-rice py-32 md:py-40">
         <div className="relative z-10 max-w-6xl mx-auto px-6">
           <Reveal className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-black text-earth">{t('Món Nổi Bật', 'Featured Dishes')}</h2>
+            <h2 className="text-4xl md:text-5xl font-black text-earth" style={{ fontFamily: 'var(--font-display-wide)' }}>{t('Món Nổi Bật', 'Featured Dishes')}</h2>
           </Reveal>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -164,7 +164,7 @@ export default function Home() {
         <div className="absolute inset-0" style={{ backgroundImage: 'url(/images/rice_grain_with_dana_logo.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed', opacity: '0.15' }} />
         <div className="max-w-6xl mx-auto px-6">
           <Reveal className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-black text-cream mb-4">{t('Bản Đồ Ẩm Thực Chay', 'Vegan Culinary Map')}</h2>
+            <h2 className="text-4xl md:text-5xl font-black text-cream mb-4" style={{ fontFamily: 'var(--font-display-wide)' }}>{t('Bản Đồ Ẩm Thực Chay', 'Vegan Culinary Map')}</h2>
             <p className="text-cream/50 text-sm max-w-lg mx-auto leading-relaxed">{t('Mỗi món ăn là một chuyến du ngoạn đến vùng đất mới và khám phá những vùng nguyên liệu Việt.', 'Every dish is a journey to a new land, exploring the finest ingredient regions of Vietnam.')}</p>
           </Reveal>
 
@@ -201,8 +201,8 @@ export default function Home() {
         <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 30% 50%, rgba(196, 98, 58, 0.9) 0%, rgba(139, 58, 26, 0.95) 60%, rgba(92, 45, 10, 1) 100%)' }} />
         <div className="relative z-10 max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
           <Reveal>
-            <h2 className="text-6xl md:text-8xl font-black text-cream leading-none mb-2">GIẢI</h2>
-            <h2 className="text-6xl md:text-8xl font-black text-gold leading-none mb-6">KHÁT</h2>
+            <h2 className="text-6xl md:text-8xl font-black text-cream leading-none mb-2" style={{ fontFamily: 'var(--font-display-wide)' }}>GIẢI</h2>
+            <h2 className="text-6xl md:text-8xl font-black text-gold leading-none mb-6" style={{ fontFamily: 'var(--font-display-wide)' }}>KHÁT</h2>
             <p className="text-cream/60 text-sm leading-relaxed max-w-xs mb-8">{t('"Nước Giải Khát" — từ được dùng từ thời bao cấp, gợi nhắc những thức uống bổ dưỡng dành cho khách quý.', '"Nước Giải Khát" — a term from the subsidy era, evoking nourishing drinks for honored guests.')}</p>
             <Link to="/menu#giai-khat" className="group inline-flex items-center gap-2 text-sm font-bold tracking-widest uppercase text-cream border-b border-cream/30 pb-1 hover:border-cream transition-all duration-300">
               {t('Xem Đồ Uống', 'View Drinks')}
@@ -239,7 +239,7 @@ export default function Home() {
       <section className="bg-rice py-32 md:py-40">
         <div className="max-w-6xl mx-auto px-6">
           <Reveal className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-black text-earth">{t('Mâm Cơm Nhà', 'Family Table Sets')}</h2>
+            <h2 className="text-4xl md:text-5xl font-black text-earth" style={{ fontFamily: 'var(--font-display-wide)' }}>{t('Mâm Cơm Nhà', 'Family Table Sets')}</h2>
             <p className="text-earth/50 text-sm mt-3">{t('Giá gốc đã được giảm ưu đãi', 'Special discounted prices')}</p>
           </Reveal>
 
@@ -292,14 +292,14 @@ export default function Home() {
         <div className="absolute inset-0" style={{ backgroundImage: 'url(/images/farmers_yellow.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed', opacity: '0.25' }} />
         <div className="max-w-5xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
           <Reveal>
-            <h2 className="text-4xl md:text-5xl font-black text-cream mb-8 leading-tight">{t('Ghé Thăm\nDāna Hôm Nay', 'Visit Dāna\nToday')}</h2>
+            <h2 className="text-4xl md:text-5xl font-black text-cream mb-8 leading-tight" style={{ fontFamily: 'var(--font-display-wide)' }}>{t('Ghé Thăm\nDāna Hôm Nay', 'Visit Dāna\nToday')}</h2>
 
             <div className="space-y-5 text-cream/70 text-sm">
               <div className="flex gap-4">
                 <MapPin size={20} weight="light" className="text-forest-light shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-cream font-semibold">12 Đông Thái, Hàng Buồm</p>
-                  <p>Hoàn Kiếm, Hà Nội, Việt Nam</p>
+                  <p className="text-cream font-semibold">12 Phố Đông Thái, Phường Hoàn Kiếm</p>
+                  <p>TP.Hà Nội</p>
                 </div>
               </div>
               <div className="flex gap-4">
@@ -333,9 +333,8 @@ export default function Home() {
               <div className="absolute inset-0 bg-black/30" />
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
                 <Lamp size={48} weight="light" className="text-gold/80 mb-4" />
-                <p className="text-cream font-black text-xl">12 Đông Thái</p>
-                <p className="text-cream/80 text-sm mt-1">Hàng Buồm, Hoàn Kiếm</p>
-                <p className="text-cream/80 text-sm">Hà Nội</p>
+                <p className="text-cream font-black text-xl">12 Phố Đông Thái</p>
+                <p className="text-cream/80 text-sm mt-1">Phường Hoàn Kiếm, TP.Hà Nội</p>
                 <a href="https://www.google.com/maps/place/Dana+Vegan+House" target="_blank" rel="noreferrer" className="mt-6 text-xs font-bold tracking-widest uppercase text-gold border border-gold/50 px-5 py-2 rounded-full hover:bg-gold hover:text-earth transition-all duration-300 btn-magnetic">
                   Google Maps ↗
                 </a>

@@ -87,14 +87,14 @@ export default function Menu() {
   }
 
   return (
-    <main className="min-h-screen bg-cream">
+    <main className="min-h-screen" style={{ backgroundColor: '#F2E4C8' }}>
       {/* ── Hero Banner ── */}
       <section className="relative min-h-[40vh] md:min-h-[46vh] pt-20 md:pt-24 pb-10 md:pb-12 overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0" style={{ backgroundImage: 'url(/images/menu_front_page_green.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} />
         <div className="absolute inset-0" style={{ backgroundImage: 'url(/images/farmers_horizontal_yellow.png)', backgroundSize: 'cover', backgroundPosition: 'center bottom', backgroundRepeat: 'no-repeat', opacity: 0.55 }} />
         <div className="absolute inset-0 bg-black/30" />
         <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-          <h1 className="text-6xl md:text-8xl font-black text-cream leading-none mb-4">{t('THỰC ĐƠN', 'MENU')}</h1>
+          <h1 className="text-6xl md:text-8xl font-black text-cream leading-none mb-4" style={{ fontFamily: 'var(--font-display-wide)' }}>{t('THỰC ĐƠN', 'MENU')}</h1>
           <p className="text-cream/50 text-xs tracking-wider">{t('Giá chưa bao gồm VAT', 'Prices exclude VAT')}</p>
         </div>
       </section>
