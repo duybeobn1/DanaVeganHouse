@@ -52,6 +52,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* PREMIUM CUBIC-BEZIER */
+:root {
+  --ease-premium: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 /* RICE GRAIN TEXTURE */
 .rice-texture::before {
   content: '';
@@ -73,7 +80,7 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 .page-transition {
-  animation: pageFadeIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: pageFadeIn 0.7s var(--ease-smooth) both;
 }
 
 /* SCROLL FADE-IN */
@@ -81,18 +88,18 @@ body {
   from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.fade-in-up { animation: fadeInUp 0.7s ease-out both; }
-.fade-in-up-1 { animation: fadeInUp 0.7s 0.1s ease-out both; }
-.fade-in-up-2 { animation: fadeInUp 0.7s 0.25s ease-out both; }
-.fade-in-up-3 { animation: fadeInUp 0.7s 0.4s ease-out both; }
-.fade-in-up-4 { animation: fadeInUp 0.7s 0.55s ease-out both; }
+.fade-in-up { animation: fadeInUp 0.7s var(--ease-spring) both; }
+.fade-in-up-1 { animation: fadeInUp 0.7s 0.1s var(--ease-spring) both; }
+.fade-in-up-2 { animation: fadeInUp 0.7s 0.25s var(--ease-spring) both; }
+.fade-in-up-3 { animation: fadeInUp 0.7s 0.4s var(--ease-spring) both; }
+.fade-in-up-4 { animation: fadeInUp 0.7s 0.55s var(--ease-spring) both; }
 
 /* BOUNCE */
 @keyframes bounce-slow {
   0%, 100% { transform: translateX(-50%) translateY(0); }
   50%       { transform: translateX(-50%) translateY(8px); }
 }
-.bounce-slow { animation: bounce-slow 2s ease-in-out infinite; }
+.bounce-slow { animation: bounce-slow 2s var(--ease-premium) infinite; }
 
 /* MENU CATEGORY PILL */
 .cat-pill {
@@ -106,7 +113,7 @@ body {
   color: #C4623A;
   background: transparent;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.3s var(--ease-smooth), color 0.3s var(--ease-smooth);
   white-space: nowrap;
   font-family: "Be Vietnam Pro", sans-serif;
 }
@@ -116,6 +123,7 @@ body {
 }
 
 /* MENU ITEM HOVER */
+.menu-item { transition: background 0.3s var(--ease-smooth); }
 .menu-item:hover { background: rgba(196,98,58,0.04); }
 
 /* FULL BLEED utility for edge-to-edge sections */
@@ -126,4 +134,86 @@ body {
   margin-left: -50vw;
   margin-right: -50vw;
   width: 100vw;
+}
+
+/* DOUBLE-BEZEL SHELL */
+.double-bezel {
+  padding: 1.5px;
+  border-radius: 2rem;
+  background: rgba(255,248,236,0.08);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
+}
+.double-bezel-inner {
+  border-radius: calc(2rem - 1.5px);
+  height: 100%;
+  overflow: hidden;
+}
+
+/* MAGNETIC BUTTON */
+.btn-magnetic {
+  transition: all 0.4s var(--ease-premium);
+  cursor: pointer;
+}
+.btn-magnetic:active {
+  transform: scale(0.97);
+}
+
+/* NESTED BUTTON ICON */
+.btn-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  background: rgba(0,0,0,0.06);
+  transition: all 0.3s var(--ease-smooth);
+}
+.dark .btn-icon-wrap {
+  background: rgba(255,255,255,0.1);
+}
+.group:hover .btn-icon-wrap {
+  transform: translateX(2px) translateY(-1px) scale(1.05);
+}
+
+/* PREMIUM TINTED SHADOWS */
+.shadow-premium {
+  box-shadow:
+    0 1px 3px rgba(92,51,23,0.04),
+    0 8px 32px rgba(92,51,23,0.06),
+    0 24px 64px rgba(92,51,23,0.04);
+}
+.shadow-premium-dark {
+  box-shadow:
+    0 1px 3px rgba(0,0,0,0.15),
+    0 8px 32px rgba(0,0,0,0.2),
+    0 24px 64px rgba(0,0,0,0.15);
+}
+
+/* SCROLLBAR HIDE */
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { scrollbar-width: none; }
+
+/* PREMIUM AMBIENT SHADOW */
+.shadow-ambient {
+  box-shadow:
+    0 4px 20px rgba(92,51,23,0.04),
+    0 12px 48px rgba(92,51,23,0.03);
+}
+.shadow-ambient-dark {
+  box-shadow:
+    0 4px 20px rgba(0,0,0,0.12),
+    0 12px 48px rgba(0,0,0,0.08);
+}
+
+/* GRAIN OVERLAY */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
 }
