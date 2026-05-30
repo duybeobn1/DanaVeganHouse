@@ -4,7 +4,6 @@ import { allCategories, mamNha } from '../data/menuData'
 import type { MenuItem } from '../data/menuData'
 import { motion, useInView } from 'motion/react'
 import { Star, Leaf, MapPin, BowlFood, ForkKnife, Bread, Coffee } from '@phosphor-icons/react'
-import MenuMobile from './MenuMobile'
 
 function Reveal({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef(null)
@@ -89,13 +88,6 @@ export default function Menu() {
 
   return (
     <main className="min-h-screen" style={{ backgroundColor: '#F0E6D0' }}>
-      {/* Mobile version */}
-      <div className="lg:hidden">
-        <MenuMobile />
-      </div>
-
-      {/* ── Desktop version ── */}
-      <div className="hidden lg:block">
       {/* ── Hero Banner ── */}
       <section className="relative min-h-[28vh] md:min-h-[46vh] pt-16 md:pt-24 pb-8 md:pb-12 overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0" style={{ backgroundImage: 'url(/images/menu_front_page_green.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} />
@@ -194,7 +186,6 @@ export default function Menu() {
             {t('Giá chưa bao gồm VAT · Thực đơn có thể thay đổi', 'Prices exclude VAT · Menu subject to change')}
           </p>
         </div>
-      </div>
       </div>
     </main>
   )
