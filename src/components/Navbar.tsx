@@ -71,7 +71,7 @@ export default function Navbar() {
         >
           {/* ── Logo ── */}
           <Link to="/" className="flex items-center shrink-0" onClick={() => setMenuOpen(false)}>
-            <img src="/DANA%20identity-03.png" alt="Dāna" className="h-28 md:h-36 w-auto" />
+            <img src="/DANA%20identity-03.png" alt="Dāna" className="h-14 md:h-36 w-auto" />
           </Link>
 
           {/* ── Desktop Nav ── */}
@@ -167,7 +167,7 @@ export default function Navbar() {
             animate={{ opacity: 1, backdropFilter: 'blur(24px)' }}
             exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
             transition={{ duration: 0.35 }}
-            className="fixed inset-0 z-[-1] flex flex-col items-center justify-center bg-cream/90"
+            className="fixed inset-0 z-40 flex flex-col items-center justify-center bg-cream/90 pointer-events-auto"
             style={{ backdropFilter: 'blur(24px)' }}
           >
             <nav className="flex flex-col items-center gap-6">

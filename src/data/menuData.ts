@@ -237,7 +237,6 @@ export const batOTo: MenuCategory = {
       name: { vi: 'Nấm "Thả Thính" Nam Định', en: 'Nam Định "Roasted Rice Flour" Mushrooms' },
       ingredients: { vi: 'Nấm, thính gạo, lá sung, gia vị chay', en: 'Mushrooms, toasted rice flour (thính), fig leaf, vegan seasoning' },
       price: '105.000',
-      isSignature: true,
       region: 'Nam Định',
     },
     {
@@ -245,7 +244,6 @@ export const batOTo: MenuCategory = {
       name: { vi: 'Củ Dền Nướng Sốt Hạt Điều Bình Phước', en: 'Roasted Beetroot with Bình Phước Cashew Sauce' },
       ingredients: { vi: 'Củ dền, cơm gạo Séng Cù, sốt hạt điều, gia vị (nướng)', en: 'Beetroot, Séng Cù rice, cashew sauce, seasoning (grilled)' },
       price: '165.000',
-      isSignature: true,
       region: 'Bình Phước',
     },
     {

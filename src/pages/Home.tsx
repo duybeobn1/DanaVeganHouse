@@ -42,7 +42,7 @@ export default function Home() {
             <span className="block text-[18vw] md:text-[13rem] font-black text-cream fade-in-up-2" style={{ lineHeight: 0.88 }}>VEGAN</span>
           </h1>
 
-          <div className="mt-12 flex items-center justify-between max-w-lg mx-auto">
+          <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 max-w-lg mx-auto">
             <Link to="/menu" className="inline-flex items-center px-8 py-3.5 text-sm font-bold tracking-widest uppercase border-2 border-cream text-cream hover:bg-cream hover:text-earth rounded-full transition-all duration-300">
               {t('Xem Thực Đơn', 'View Menu')}
             </Link>
@@ -86,7 +86,7 @@ export default function Home() {
       {/* ══════════════════════════════════════════════
           3. ABOUT / KHO GẠO STORY
       ══════════════════════════════════════════════ */}
-      <section className="bg-cream py-32 md:py-40">
+      <section className="bg-cream py-20 md:py-40">
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
           <Reveal className="order-2 md:order-1">
             <div className="relative rounded-[2rem] overflow-hidden max-w-md mx-auto shadow-premium" style={{ aspectRatio: '1/1' }}>
@@ -119,9 +119,9 @@ export default function Home() {
       {/* ══════════════════════════════════════════════
           4. FEATURED DISHES
       ══════════════════════════════════════════════ */}
-      <section className="bg-rice py-32 md:py-40">
+      <section className="bg-rice py-20 md:py-40">
         <div className="relative z-10 max-w-6xl mx-auto px-6">
-          <Reveal className="text-center mb-16">
+          <Reveal className="text-center mb-12 md:mb-16">
             <h2 className="text-4xl md:text-5xl font-black text-earth" style={{ fontFamily: 'var(--font-display-wide)' }}>{t('Món Nổi Bật', 'Featured Dishes')}</h2>
           </Reveal>
 
@@ -160,7 +160,7 @@ export default function Home() {
       {/* ══════════════════════════════════════════════
           5. BẢN ĐỒ ẨM THỰC CHAY
       ══════════════════════════════════════════════ */}
-      <section className="py-32 md:py-40 relative overflow-hidden" style={{ backgroundColor: '#3D2210' }}>
+      <section className="py-20 md:py-40 relative overflow-hidden" style={{ backgroundColor: '#3D2210' }}>
         <div className="absolute inset-0" style={{ backgroundImage: 'url(/images/rice_grain_with_dana_logo.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed', opacity: '0.15' }} />
         <div className="max-w-6xl mx-auto px-6">
           <Reveal className="text-center mb-16">
@@ -196,7 +196,7 @@ export default function Home() {
       {/* ══════════════════════════════════════════════
           6. GIẢI KHÁT TEASER
       ══════════════════════════════════════════════ */}
-      <section className="relative py-32 md:py-40 rice-texture overflow-hidden">
+      <section className="relative py-20 md:py-40 rice-texture overflow-hidden">
         <div className="absolute inset-0" style={{ backgroundImage: 'url(/images/branding_image_with_cups_of_beverage_and_logo.png)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
         <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 30% 50%, rgba(196, 98, 58, 0.9) 0%, rgba(139, 58, 26, 0.95) 60%, rgba(92, 45, 10, 1) 100%)' }} />
         <div className="relative z-10 max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
@@ -236,9 +236,9 @@ export default function Home() {
       {/* ══════════════════════════════════════════════
           7. MÂM NHÀ — SET MENUS
       ══════════════════════════════════════════════ */}
-      <section className="bg-rice py-32 md:py-40">
+      <section className="bg-rice py-20 md:py-40">
         <div className="max-w-6xl mx-auto px-6">
-          <Reveal className="text-center mb-16">
+          <Reveal className="text-center mb-12 md:mb-16">
             <h2 className="text-4xl md:text-5xl font-black text-earth" style={{ fontFamily: 'var(--font-display-wide)' }}>{t('Mâm Cơm Nhà', 'Family Table Sets')}</h2>
             <p className="text-earth/50 text-sm mt-3">{t('Giá gốc đã được giảm ưu đãi', 'Special discounted prices')}</p>
           </Reveal>
@@ -288,7 +288,7 @@ export default function Home() {
       {/* ══════════════════════════════════════════════
           8. LOCATION / CTA
       ══════════════════════════════════════════════ */}
-      <section className="py-32 md:py-40 relative overflow-hidden" style={{ backgroundColor: '#2A5C34' }}>
+      <section className="py-20 md:py-40 relative overflow-hidden" style={{ backgroundColor: '#2A5C34' }}>
         <div className="absolute inset-0" style={{ backgroundImage: 'url(/images/farmers_yellow.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed', opacity: '0.25' }} />
         <div className="max-w-5xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
           <Reveal>

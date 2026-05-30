@@ -37,9 +37,8 @@ export default function Footer() {
           {/* Brand */}
           <Reveal>
             <div>
-              <div className="mb-4">
-                <span className="text-4xl tracking-tight" style={{ fontFamily: '"Nunito", "Be Vietnam Pro", sans-serif', fontWeight: 900, color: '#E8A800' }}>dāna</span>
-                <p className="text-[0.6rem] font-bold tracking-[0.4em] uppercase text-cream/50 mt-0.5">VEGAN HOUSE</p>
+              <div className="mb-4 overflow-hidden">
+                <img src="/DANA%20identity-03.png" alt="Dāna" className="h-36 md:h-48 w-auto scale-125" />
               </div>
               <p className="text-sm leading-relaxed text-cream/60 max-w-xs">{t('Nhà chay đổi mới — nơi hành trình hạt gạo và văn hoá Việt Nam được tái sinh trong không gian nghệ thuật đầy cảm hứng.', 'A new-generation vegan house — where the journey of rice and Vietnamese culture is reborn in an inspiring artistic space.')}</p>
               <div className="mt-6 flex gap-4">

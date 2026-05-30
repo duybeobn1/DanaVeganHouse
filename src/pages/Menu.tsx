@@ -4,6 +4,7 @@ import { allCategories, mamNha } from '../data/menuData'
 import type { MenuItem } from '../data/menuData'
 import { motion, useInView } from 'motion/react'
 import { Star, Leaf, MapPin, BowlFood, ForkKnife, Bread, Coffee } from '@phosphor-icons/react'
+import MenuMobile from './MenuMobile'
 
 function Reveal({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef(null)
@@ -87,14 +88,21 @@ export default function Menu() {
   }
 
   return (
-    <main className="min-h-screen" style={{ backgroundColor: '#F2E4C8' }}>
+    <main className="min-h-screen" style={{ backgroundColor: '#F0E6D0' }}>
+      {/* Mobile version */}
+      <div className="lg:hidden">
+        <MenuMobile />
+      </div>
+
+      {/* ── Desktop version ── */}
+      <div className="hidden lg:block">
       {/* ── Hero Banner ── */}
-      <section className="relative min-h-[40vh] md:min-h-[46vh] pt-20 md:pt-24 pb-10 md:pb-12 overflow-hidden flex items-center justify-center">
+      <section className="relative min-h-[28vh] md:min-h-[46vh] pt-16 md:pt-24 pb-8 md:pb-12 overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0" style={{ backgroundImage: 'url(/images/menu_front_page_green.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }} />
         <div className="absolute inset-0" style={{ backgroundImage: 'url(/images/farmers_horizontal_yellow.png)', backgroundSize: 'cover', backgroundPosition: 'center bottom', backgroundRepeat: 'no-repeat', opacity: 0.55 }} />
-        <div className="absolute inset-0 bg-black/30" />
-        <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-          <h1 className="text-6xl md:text-8xl font-black text-cream leading-none mb-4" style={{ fontFamily: 'var(--font-display-wide)' }}>{t('THỰC ĐƠN', 'MENU')}</h1>
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(196,98,58,0.2) 0%, rgba(92,51,23,0.4) 100%)' }} />
+        <div className="max-w-4xl mx-auto px-4 md:px-6 text-center relative z-10">
+          <h1 className="text-5xl sm:text-6xl md:text-8xl font-black text-cream leading-none mb-4" style={{ fontFamily: 'var(--font-display-wide)' }}>{t('THỰC ĐƠN', 'MENU')}</h1>
           <p className="text-cream/50 text-xs tracking-wider">{t('Giá chưa bao gồm VAT', 'Prices exclude VAT')}</p>
         </div>
       </section>
@@ -121,32 +129,29 @@ export default function Menu() {
           </ul>
         </nav>
 
-        {/* Mobile category jump bar */}
-        <div className="lg:hidden sticky top-20 z-30 -mx-4 px-4 py-2 bg-cream/90 backdrop-blur-xl border-b border-rice-dark mb-6 -mt-4 overflow-x-auto scrollbar-none">
-          <div className="flex gap-2">
-            {sideNavItems.map(({ id, label }) => (
-              <button
-                key={id}
-                onClick={() => scrollTo(id)}
-                className={`shrink-0 text-[0.65rem] font-bold tracking-wider uppercase px-3 py-1.5 rounded-full transition-all duration-200 ${
-                  activeId === id ? 'bg-brand text-cream' : 'bg-earth/5 text-earth/60 hover:text-earth'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* ── Content ── */}
-        <div className="flex-1 min-w-0 pt-4">
-          {catWithIcon.map((cat, ci) => (
-            <CategorySection key={cat.id} category={cat} index={ci} lang={lang} />
-          ))}
+        <div className="flex-1 min-w-0 pt-2 sm:pt-4">
+          {catWithIcon.flatMap((cat, ci) => [
+            <CategorySection key={cat.id} category={cat} index={ci} lang={lang} />,
+            ci < catWithIcon.length - 1 && (
+              <div key={`divider-${cat.id}`} className="flex items-center gap-4 my-14 sm:my-20 px-2">
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-brand/40 to-transparent" />
+                <div className="w-2 h-2 rotate-45 bg-brand/50 shrink-0" />
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-brand/40 to-transparent" />
+              </div>
+            ),
+          ])}
+
+          {/* divider before set menus */}
+          <div className="flex items-center gap-4 my-14 sm:my-20 px-2">
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-brand/40 to-transparent" />
+            <div className="w-2 h-2 rotate-45 bg-brand/50 shrink-0" />
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-brand/40 to-transparent" />
+          </div>
 
           {/* ── Set Menus ── */}
-          <section id="mam-nha" className="mt-24 scroll-mt-28">
-            <Reveal className="mb-10">
+          <section id="mam-nha" className="scroll-mt-20 md:scroll-mt-28">
+            <Reveal className="mb-6 md:mb-10">
               <h2 className="text-3xl md:text-4xl font-black text-earth">{t('Mâm Cơm Nhà', 'Family Table Sets')}</h2>
               <p className="text-earth/50 text-sm mt-2 max-w-lg">{t('Mâm Cơm Nhà theo gợi ý của Dāna. Mỗi Mâm Cơm mang một tinh thần khác nhau.', "Dāna's curated set menus. Each carries a unique regional spirit.")}</p>
             </Reveal>
@@ -155,7 +160,7 @@ export default function Menu() {
                 <Reveal key={set.id} delay={i * 0.06}>
                   <div className="double-bezel h-full">
                     <div className="double-bezel-inner bg-cream border border-rice-dark">
-                      <div className="bg-earth px-6 py-5">
+                      <div className="bg-earth px-4 sm:px-6 py-4 sm:py-5">
                         <div className="flex items-start justify-between">
                           <div>
                             <h3 className="text-lg font-black text-cream">{set.name[lang]}</h3>
@@ -167,7 +172,7 @@ export default function Menu() {
                           </div>
                         </div>
                       </div>
-                      <div className="px-6 py-5">
+                      <div className="px-4 sm:px-6 py-4 sm:py-5">
                         <p className="text-[0.6rem] font-bold tracking-wider uppercase text-earth/30 mb-3">{t('Bao gồm', 'Includes')}</p>
                         <ul className="space-y-1.5">
                           {set.dishes.map(dish => (
@@ -185,10 +190,11 @@ export default function Menu() {
             </div>
           </section>
 
-          <p className="text-center text-[0.6rem] text-earth/30 mt-16 tracking-wider">
+          <p className="text-center text-[0.6rem] text-earth/30 mt-10 md:mt-16 tracking-wider">
             {t('Giá chưa bao gồm VAT · Thực đơn có thể thay đổi', 'Prices exclude VAT · Menu subject to change')}
           </p>
         </div>
+      </div>
       </div>
     </main>
   )
@@ -201,20 +207,20 @@ function CategorySection({ category, index, lang }: { category: typeof allCatego
 
   const layoutMap: Record<string, 'compact-grid' | 'hero-grid' | 'card-rows' | 'minimal-list' | 'sweet-cards' | 'grouped'> = {
     'bat-con': 'compact-grid',
-    'bat-o-to': 'hero-grid',
-    'mam': 'card-rows',
-    'dua-ca': 'minimal-list',
-    'thia-ngot': 'sweet-cards',
+    'bat-o-to': 'compact-grid',
+    'mam': 'compact-grid',
+    'dua-ca': 'compact-grid',
+    'thia-ngot': 'compact-grid',
     'giai-khat': 'grouped',
   }
 
   const layout = layoutMap[id]
 
   return (
-    <section id={id} className="mt-20 md:mt-24 first:mt-0 scroll-mt-28">
-      <Reveal className="mb-8">
+    <section id={id} className="mt-10 md:mt-24 first:mt-0 scroll-mt-20 md:scroll-mt-28">
+      <Reveal className="mb-4 sm:mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <Icon size={18} weight="light" className="text-brand/50" />
+          <Icon size={16} weight="light" className="text-brand/50 shrink-0" />
           <h2 className="text-2xl md:text-3xl font-black text-earth tracking-tight">{category.name[lang]}</h2>
         </div>
         {index < 2 && (
@@ -238,7 +244,7 @@ function CompactGrid({ items, lang }: { items: MenuItem[]; lang: 'vi' | 'en' }) 
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
       {items.map((item, i) => (
         <Reveal key={item.id} delay={i * 0.03}>
-          <div className={`group flex items-start justify-between gap-3 p-4 rounded-2xl transition-all duration-300 ${item.isSignature ? 'bg-brand-pale/60 shadow-ambient' : 'hover:bg-rice'}`}>
+          <div className={`group flex items-start justify-between gap-2 sm:gap-3 p-3 sm:p-4 rounded-2xl transition-all duration-300 h-full ${item.isSignature ? 'bg-brand/15 shadow-ambient' : 'hover:bg-rice'}`}>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <h4 className="font-bold text-earth text-sm leading-tight">{item.name[lang]}</h4>
@@ -266,13 +272,13 @@ function HeroGrid({ items, lang }: { items: MenuItem[]; lang: 'vi' | 'en' }) {
   const rest = items.filter(i => !i.isSignature)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {signatureItems.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {signatureItems.map((item, i) => (
             <Reveal key={item.id} delay={i * 0.06}>
               <div className="double-bezel h-full">
-                <div className="double-bezel-inner bg-brand p-5 flex flex-col justify-between min-h-[180px]">
+                <div className="double-bezel-inner bg-brand p-4 sm:p-5 flex flex-col justify-between min-h-[140px] sm:min-h-[180px]">
                   <div>
                     <div className="flex items-center gap-1 mb-2">
                       <Star size={10} weight="fill" className="text-gold" />
@@ -299,7 +305,7 @@ function CardRows({ items, lang }: { items: MenuItem[]; lang: 'vi' | 'en' }) {
     <div className="grid grid-cols-1 gap-3">
       {items.map((item, i) => (
         <Reveal key={item.id} delay={i * 0.04}>
-          <div className={`flex items-start justify-between gap-4 p-5 rounded-2xl transition-all duration-300 ${item.isSignature ? 'bg-rice shadow-ambient border border-rice-dark' : 'hover:bg-rice/50'}`}>
+          <div className={`flex items-start justify-between gap-3 sm:gap-4 p-4 sm:p-5 rounded-2xl transition-all duration-300 ${item.isSignature ? 'bg-rice shadow-ambient border border-rice-dark' : 'hover:bg-rice/50'}`}>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h4 className="font-bold text-earth text-base">{item.name[lang]}</h4>
@@ -333,7 +339,7 @@ function MinimalList({ items, lang }: { items: MenuItem[]; lang: 'vi' | 'en' }) 
       {signatureItems.map((item, i) => (
         <Reveal key={item.id} delay={i * 0.04}>
           <div className="double-bezel h-full">
-            <div className="double-bezel-inner bg-forest p-5 flex flex-col justify-between min-h-[140px]">
+            <div className="double-bezel-inner bg-forest p-4 sm:p-5 flex flex-col justify-between min-h-[110px] sm:min-h-[140px]">
               <h4 className="font-black text-cream text-base">{item.name[lang]}</h4>
               <div className="flex items-center justify-between mt-2">
                 <p className="text-cream/50 text-[0.65rem]">{item.ingredients[lang]}</p>
@@ -345,7 +351,7 @@ function MinimalList({ items, lang }: { items: MenuItem[]; lang: 'vi' | 'en' }) 
       ))}
       {rest.map((item, i) => (
         <Reveal key={item.id} delay={(signatureItems.length + i) * 0.04}>
-          <div className="flex items-start justify-between gap-3 p-4 rounded-2xl border border-rice-dark hover:shadow-ambient transition-all duration-300">
+          <div className="flex items-start justify-between gap-2 sm:gap-3 p-3 sm:p-4 rounded-2xl border border-rice-dark hover:shadow-ambient transition-all duration-300">
             <div>
               <h4 className="font-semibold text-earth text-sm">{item.name[lang]}</h4>
               <p className="text-earth/45 text-[0.65rem] mt-1">{item.ingredients[lang]}</p>
@@ -364,7 +370,7 @@ function SweetCards({ items, lang }: { items: MenuItem[]; lang: 'vi' | 'en' }) {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {items.map((item, i) => (
         <Reveal key={item.id} delay={i * 0.06}>
-          <div className={`p-6 rounded-[2rem] text-center transition-all duration-300 ${item.isSignature ? 'bg-brand text-cream shadow-premium' : 'bg-rice/60 border border-rice-dark'}`}>
+          <div className={`p-5 sm:p-6 rounded-[1.5rem] sm:rounded-[2rem] text-center transition-all duration-300 ${item.isSignature ? 'bg-brand text-cream shadow-premium' : 'bg-rice/60 border border-rice-dark'}`}>
             <div className="flex items-center justify-center gap-1 mb-3">
               {item.isSignature && <Star size={12} weight="fill" className="text-gold" />}
             </div>
@@ -388,14 +394,14 @@ function GroupedDrinks({ items, lang }: { items: MenuItem[]; lang: 'vi' | 'en' }
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {Object.entries(groups).map(([label, groupItems]) => (
         <div key={label}>
           <h3 className="text-xs font-bold tracking-wider uppercase text-earth/40 mb-4">{label}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {groupItems.map((item, i) => (
               <Reveal key={item.id} delay={i * 0.03}>
-                <div className={`flex items-start justify-between gap-3 p-3.5 rounded-xl transition-all duration-300 ${item.isSignature ? 'bg-brand-pale/50' : 'hover:bg-rice/50'}`}>
+                <div className={`flex items-start justify-between gap-2 sm:gap-3 p-3 sm:p-3.5 rounded-xl transition-all duration-300 ${item.isSignature ? 'bg-brand-pale/50' : 'hover:bg-rice/50'}`}>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <h4 className="font-semibold text-earth text-sm">{item.name[lang]}</h4>

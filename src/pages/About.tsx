@@ -125,7 +125,7 @@ export default function About() {
       </section>
 
       {/* ── The Revolution ── */}
-      <section className="bg-cream py-32 md:py-40">
+      <section className="bg-cream py-20 md:py-40">
         <div className="max-w-4xl mx-auto px-6">
           <Reveal className="text-center mb-12">
             <h2 className="text-4xl md:text-5xl font-black text-earth" style={{ fontFamily: 'var(--font-display-wide)' }}>{t('Cuộc Cách Mạng\nĂn Chay', 'The Vegan\nRevolution')}</h2>
@@ -141,7 +141,7 @@ export default function About() {
       </section>
 
       {/* ── Story Timeline ── */}
-      <section className="bg-rice py-20 md:py-28">
+      <section className="bg-rice py-16 md:py-28">
         <div className="max-w-5xl mx-auto px-6">
         <div className="text-center mb-14">
           <h2 className="text-4xl md:text-5xl font-black text-earth" style={{ fontFamily: 'var(--font-display-wide)' }}>
@@ -173,7 +173,7 @@ export default function About() {
       </section>
 
       {/* ── Art Works ── */}
-      <section className="py-32 md:py-40" style={{ backgroundColor: '#3D2210' }}>
+      <section className="py-20 md:py-40" style={{ backgroundColor: '#3D2210' }}>
         <div className="max-w-5xl mx-auto px-6">
           <Reveal className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black text-cream" style={{ fontFamily: 'var(--font-display-wide)' }}>{t('Những Điều Thú Vị\nTại Dāna', 'Unique Features\nAt Dāna')}</h2>

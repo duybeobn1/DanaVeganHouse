@@ -37,7 +37,7 @@ export default function Contact() {
       </section>
 
       {/* ── Info Grid ── */}
-      <section className="bg-cream py-32 md:py-40">
+      <section className="bg-cream py-20 md:py-40">
         <div className="max-w-5xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-10">
 
           {/* Left: contact details */}
@@ -157,14 +157,14 @@ export default function Contact() {
       </section>
 
       {/* ── CTA Banner ── */}
-      <section className="py-24 md:py-32 text-center relative overflow-hidden">
+      <section className="py-16 md:py-32 text-center relative overflow-hidden">
         <div className="absolute inset-0" style={{ backgroundImage: 'url(/images/branding_image_with_cups_of_beverage_and_logo.png)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
         <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(196,98,58,0.85) 0%, rgba(139,58,26,0.95) 100%)' }} />
 
         <div className="relative z-10 max-w-2xl mx-auto px-6">
           <p className="text-cream font-black text-3xl md:text-4xl mb-4">{t('Đặt Bàn Ngay', 'Reserve a Table')}</p>
           <p className="text-cream/80 text-sm mb-8">{t('Chúng tôi rất mong được phục vụ bạn!', 'We look forward to serving you!')}</p>
-          <div className="flex gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="tel:0828744931" className="px-8 py-3 text-sm font-bold tracking-widest uppercase bg-cream text-earth rounded-full hover:bg-rice transition-all duration-300 btn-magnetic">{t('Gọi Ngay', 'Call Now')}</a>
             <Link to="/menu" className="px-8 py-3 text-sm font-bold tracking-widest uppercase border-2 border-cream text-cream rounded-full hover:bg-cream hover:text-earth transition-all duration-300 btn-magnetic">{t('Xem Thực Đơn', 'View Menu')}</Link>
           </div>
