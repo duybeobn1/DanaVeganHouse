@@ -197,7 +197,8 @@ export default function Menu() {
             </div>
           </section>
 
-          <p className="text-center text-[0.6rem] text-earth/30 mt-10 md:mt-16 tracking-wider">
+          <img src="/images/menu/deco-farmers.webp" alt="" loading="lazy" className="mx-auto mt-14 w-56 mix-blend-multiply" />
+          <p className="text-center text-[0.6rem] text-earth/30 mt-6 tracking-wider">
             {t('Giá chưa bao gồm VAT · Thực đơn có thể thay đổi', 'Prices exclude VAT · Menu subject to change')}
           </p>
         </div>
@@ -222,9 +223,15 @@ function CategorySection({ category, index, lang }: { category: typeof allCatego
   }
 
   const layout = layoutMap[id]
+  const banners = ['bat-con', 'bat-o-to', 'mam', 'thia-ngot']
 
   return (
     <section id={id} className="mt-10 md:mt-24 first:mt-0 scroll-mt-20 md:scroll-mt-28">
+      {banners.includes(id) && (
+        <Reveal className="mb-6">
+          <img src={`/images/menu/banner-${id}.webp`} alt={category.name[lang]} loading="lazy" className="w-full h-40 sm:h-56 md:h-64 object-cover rounded-[2rem] shadow-ambient" />
+        </Reveal>
+      )}
       <Reveal className="mb-4 sm:mb-8">
         <div className="flex items-center gap-3 mb-2">
           <Icon size={16} weight="light" className="text-brand/50 shrink-0" />

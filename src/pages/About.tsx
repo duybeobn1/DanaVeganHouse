@@ -179,6 +179,23 @@ export default function About() {
             <h2 className="text-4xl md:text-5xl font-black text-cream" style={{ fontFamily: 'var(--font-display-wide)' }}>{t('Những Điều Thú Vị\nTại Dāna', 'Unique Features\nAt Dāna')}</h2>
           </Reveal>
 
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-10">
+            {[
+              { src: 'storefront', label: t('Mặt tiền 12 Đông Thái', '12 Đông Thái storefront') },
+              { src: 'dining', label: t('Không gian ăn uống', 'Dining room') },
+              { src: 'bar', label: t('Quầy bar', 'The bar') },
+              { src: 'granary', label: t('Tầng 1 – Kho gạo xưa', 'First floor – the ancient granary') },
+              { src: 'heritage', label: t('Tầng 2 – Ngôi nhà di sản', 'Second floor – the heritage house') },
+              { src: 'kitchen', label: t('Bếp mở', 'Open kitchen') },
+              { src: 'beams', label: t('Ngôi nhà Bắc Bộ 100 tuổi', 'The 100-year-old Northern house') },
+              { src: 'lantern', label: t('Đèn "Bao gạo làng ta"', '"Our Village\'s Rice" lanterns') },
+            ].map(({ src, label }, i) => (
+              <Reveal key={src} delay={(i % 4) * 0.06}>
+                <img src={`/images/menu/about-${src}.webp`} alt={label} loading="lazy" className="w-full aspect-[4/3] object-cover rounded-2xl shadow-premium-dark" />
+              </Reveal>
+            ))}
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
             {[
               { src: '/images/old_house_rooftop.png', label: t('Mái Nhà Cổ', 'Old House Roof') },
@@ -238,6 +255,7 @@ export default function About() {
       <section className="bg-cream py-32 text-center">
         <div className="max-w-xl mx-auto px-6">
           <Reveal>
+            <img src="/images/menu/deco-harvest.webp" alt="" loading="lazy" className="mx-auto w-48 mb-6 mix-blend-multiply" />
             <p className="text-4xl font-black text-earth mb-4">{t('Cảm ơn bạn', 'Thank You')}</p>
             <p className="text-earth/60 text-sm leading-relaxed mb-8">{t('Cảm ơn quý khách đã đồng hành cùng Dāna trên hành trình khám phá ẩm thực chạy dọc theo chiều dài Đất Việt. Mỗi món ăn là một lát cắt văn hoá; là tình yêu dành cho thiên nhiên, đất lành và con người.', 'Thank you for joining Dāna on a culinary journey along the length of Vietnam. Every dish is a cultural moment — a love for nature, good earth, and people.')}</p>
             <div className="flex gap-4 justify-center">
