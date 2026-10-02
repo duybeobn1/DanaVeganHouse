@@ -3,7 +3,7 @@ import { useLanguage } from '../context/LanguageContext'
 import { allCategories, mamNha } from '../data/menuData'
 import type { MenuItem } from '../data/menuData'
 import { motion, useInView } from 'motion/react'
-import { Star, Leaf, MapPin, BowlFood, ForkKnife, Bread, Coffee } from '@phosphor-icons/react'
+import { Star, Heart, Medal, Leaf, MapPin, BowlFood, CookingPot, ForkKnife, Bread, Coffee } from '@phosphor-icons/react'
 
 function Reveal({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef(null)
@@ -21,7 +21,7 @@ function Reveal({ children, delay = 0, className = '' }: { children: React.React
   )
 }
 
-const categoryIcons = [BowlFood, BowlFood, ForkKnife, Bread, Star, Coffee] as const
+const categoryIcons = [BowlFood, BowlFood, CookingPot, ForkKnife, Bread, Star, Coffee] as const
 
 const sectionIds = [
   ...allCategories.map(c => c.id),
@@ -33,6 +33,16 @@ function SignatureBadge() {
     <span className="inline-flex items-center gap-1 text-[0.55rem] font-bold tracking-[0.15em] uppercase bg-brand/10 text-brand px-1.5 py-0.5 rounded-full">
       <Star size={8} weight="fill" />
     </span>
+  )
+}
+
+function MarkBadges({ item }: { item: MenuItem }) {
+  return (
+    <>
+      {item.isSignature && <SignatureBadge />}
+      {item.isSpecial && <span className="inline-flex items-center bg-gold/25 text-earth px-1.5 py-0.5 rounded-full"><Medal size={8} weight="fill" /></span>}
+      {item.isChef && <span className="inline-flex items-center bg-brand/10 text-brand px-1.5 py-0.5 rounded-full"><Heart size={8} weight="fill" /></span>}
+    </>
   )
 }
 
@@ -96,6 +106,11 @@ export default function Menu() {
         <div className="max-w-4xl mx-auto px-4 md:px-6 text-center relative z-10">
           <h1 className="text-5xl sm:text-6xl md:text-8xl font-black text-cream leading-none mb-4" style={{ fontFamily: 'var(--font-display-wide)' }}>{t('THỰC ĐƠN', 'MENU')}</h1>
           <p className="text-cream/50 text-xs tracking-wider">{t('Giá chưa bao gồm VAT', 'Prices exclude VAT')}</p>
+          <p className="text-cream/60 text-xs mt-3 flex items-center justify-center gap-4 flex-wrap">
+            <span className="inline-flex items-center gap-1"><Star size={10} weight="fill" /> {t('Nên thử', 'Must try')}</span>
+            <span className="inline-flex items-center gap-1"><Medal size={10} weight="fill" /> {t('Đặc biệt của Dāna', "Dāna's Special")}</span>
+            <span className="inline-flex items-center gap-1"><Heart size={10} weight="fill" /> {t('Đầu bếp gợi ý', "Chef's recommendation")}</span>
+          </p>
         </div>
       </section>
 
@@ -167,7 +182,7 @@ export default function Menu() {
                       <div className="px-4 sm:px-6 py-4 sm:py-5">
                         <p className="text-[0.6rem] font-bold tracking-wider uppercase text-earth/30 mb-3">{t('Bao gồm', 'Includes')}</p>
                         <ul className="space-y-1.5">
-                          {set.dishes.map(dish => (
+                          {((lang === 'en' && set.dishesEn) || set.dishes).map(dish => (
                             <li key={dish} className="flex items-start gap-2 text-sm text-earth/70">
                               <span className="text-brand mt-0.5 text-[10px] shrink-0">•</span>
                               <span>{dish}</span>
@@ -199,6 +214,7 @@ function CategorySection({ category, index, lang }: { category: typeof allCatego
   const layoutMap: Record<string, 'compact-grid' | 'hero-grid' | 'card-rows' | 'minimal-list' | 'sweet-cards' | 'grouped'> = {
     'bat-con': 'compact-grid',
     'bat-o-to': 'compact-grid',
+    'tho-ba-mien': 'compact-grid',
     'mam': 'compact-grid',
     'dua-ca': 'compact-grid',
     'thia-ngot': 'compact-grid',
@@ -235,11 +251,11 @@ function CompactGrid({ items, lang }: { items: MenuItem[]; lang: 'vi' | 'en' }) 
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
       {items.map((item, i) => (
         <Reveal key={item.id} delay={i * 0.03}>
-          <div className={`group flex items-start justify-between gap-2 sm:gap-3 p-3 sm:p-4 rounded-2xl transition-all duration-300 h-full ${item.isSignature ? 'bg-brand/15 shadow-ambient' : 'hover:bg-rice'}`}>
+          <div className={`group flex items-start justify-between gap-2 sm:gap-3 p-3 sm:p-4 rounded-2xl transition-all duration-300 h-full ${item.isSignature || item.isSpecial || item.isChef ? 'bg-brand/15 shadow-ambient' : 'hover:bg-rice'}`}>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <h4 className="font-bold text-earth text-sm leading-tight">{item.name[lang]}</h4>
-                {item.isSignature && <SignatureBadge />}
+                <MarkBadges item={item} />
                 {item.isNew && <NewBadge />}
               </div>
               {item.region && (

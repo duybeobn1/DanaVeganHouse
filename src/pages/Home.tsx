@@ -22,7 +22,7 @@ function Reveal({ children, delay = 0, className = '' }: { children: React.React
 }
 
 export default function Home() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
 
   return (
     <main>
@@ -255,7 +255,7 @@ export default function Home() {
                     <div className="px-6 py-5">
                       <p className="text-xs text-earth/50 font-semibold tracking-wider uppercase mb-3">{t('Bao gồm', 'Includes')}</p>
                       <ul className="space-y-1.5 mb-5">
-                        {set.dishes.map((dish) => (
+                        {((lang === 'en' && set.dishesEn) || set.dishes).map((dish) => (
                           <li key={dish} className="flex items-start gap-2 text-sm text-earth/70">
                             <span className="text-brand mt-0.5 text-xs shrink-0">•</span>
                             {dish}
