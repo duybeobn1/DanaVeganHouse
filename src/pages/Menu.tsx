@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 import { allCategories, mamNha } from '../data/menuData'
 import type { MenuItem } from '../data/menuData'
@@ -61,6 +62,16 @@ function MiniPrice({ price }: { price: string }) {
 export default function Menu() {
   const { lang, t } = useLanguage()
   const [activeId, setActiveId] = useState<string>(sectionIds[0])
+  const { hash } = useLocation()
+
+  // Page mounts after the route exit animation, so the browser's own anchor jump never happens.
+  // scrollIntoView is ignored while the route transition runs, so scroll the window directly.
+  useEffect(() => {
+    const el = hash && document.getElementById(hash.slice(1))
+    if (!el) return
+    const top = el.getBoundingClientRect().top + window.scrollY - parseFloat(getComputedStyle(el).scrollMarginTop)
+    window.scrollTo({ top, behavior: 'instant' })
+  }, [hash])
 
   const catWithIcon = allCategories.map((cat, i) => ({ ...cat, Icon: categoryIcons[i] }))
 
