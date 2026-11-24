@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
 import { motion, AnimatePresence } from 'motion/react'
+import ReserveLink from './ReserveLink'
 
 const navLinks = [
   { to: '/',        labelKey: ['Trang Chủ', 'Home'] },
@@ -120,8 +121,7 @@ export default function Navbar() {
               {lang === 'vi' ? 'EN' : 'VI'}
             </button>
 
-            <a
-              href="tel:0828744931"
+            <ReserveLink
               className={`group relative text-xs font-bold tracking-widest uppercase px-5 py-2 rounded-full transition-all duration-300 btn-magnetic inline-flex items-center gap-2 ${
                 isMenuPage || scrolled
                   ? 'bg-forest text-cream hover:bg-forest-mid'
@@ -129,7 +129,7 @@ export default function Navbar() {
               }`}
             >
               {t('Đặt Bàn', 'Reserve')}
-            </a>
+            </ReserveLink>
           </div>
 
           {/* ── Mobile Hamburger ── */}
@@ -210,13 +210,12 @@ export default function Navbar() {
                 >
                   {lang === 'vi' ? 'EN' : 'VI'}
                 </button>
-                <a
-                  href="tel:0828744931"
+                <ReserveLink
                   className="text-sm font-bold tracking-widest uppercase bg-brand text-cream px-6 py-2 rounded-full hover:bg-brand-dark transition-all duration-300"
                   onClick={() => setMenuOpen(false)}
                 >
                   {t('Đặt Bàn', 'Reserve')}
-                </a>
+                </ReserveLink>
               </motion.div>
             </nav>
           </motion.div>
