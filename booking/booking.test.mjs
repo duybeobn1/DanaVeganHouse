@@ -237,6 +237,24 @@ test('roles: only owners change roles, a second owner can be added, and one owne
   assert.match(lastText(), /^Chủ quán: Lan\nMọi người khác trong nhóm: Nhân viên\./)
 })
 
+test('anonymous admins and channel posts get no role, and the bot says why', async t => {
+  setup(t)
+  // Telegram's shared stand-in for anyone posting as the group, in every group.
+  const ANON = { id: 1087968824, is_bot: true, first_name: 'Group', username: 'GroupAnonymousBot' }
+  const asGroup = { title: 'Dana Vegan House' }
+  await bot({ message: { message_id: 1, chat: { id: STAFF }, from: OWNER, text: '/quyen chu',
+    reply_to_message: { message_id: 0, chat: { id: STAFF }, from: ANON, sender_chat: asGroup, text: 'ah' } } })
+  assert.match(lastText(), /^Tin bạn trả lời được gửi dưới tên "Dana Vegan House"/)
+  await bot({ message: { message_id: 2, chat: { id: STAFF }, from: ANON, sender_chat: asGroup, text: '/quyen chu' } })
+  assert.match(lastText(), /^Bạn đang gửi tin ẩn danh/)
+  await bot({ message: { message_id: 3, chat: { id: -999 }, from: ANON, sender_chat: asGroup, text: '/batdau' } })
+  assert.match(lastText(), /^Bạn đang gửi tin ẩn danh/)
+  assert.equal(fakes.data.get('tg:chat'), String(STAFF)) // not moved
+  assert.deepEqual([...fakes.data.get('tg:roles').keys()], ['1'])
+  await say('/quyen sep', { replyTo: STAFF_USER })
+  assert.match(lastText(), /^Quyền phải là chu, quanly hoặc nhanvien/)
+})
+
 test('/dat over capacity needs a manager or owner', async t => {
   setup(t)
   await say('/dat nay 19:00 28 Tiệc', { from: STAFF_USER })

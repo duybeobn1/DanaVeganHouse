@@ -74,6 +74,8 @@ Có 3 vai trò. Ai trong nhóm mà chưa được phân quyền thì là **Nhân
 
 Gõ `/quyen` (không reply) để xem ai đang giữ quyền gì. Quán luôn phải còn ít nhất một chủ quán.
 
+Quản trị viên nhóm đang bật **Ẩn danh** (Remain anonymous) gửi tin dưới tên nhóm, nên bot không biết họ là ai và không phân quyền cho họ được. Người đó cần tắt Ẩn danh (Quản lý nhóm → Quản trị viên → chọn người đó), rồi nhắn một tin mới để chủ quán reply.
+
 Khi có người nghỉ việc: xoá người đó khỏi nhóm Telegram là họ không dùng được bot nữa. Nếu họ là quản lý ca hoặc chủ quán, trước khi xoá hãy reply một tin cũ của họ bằng `/quyen nhanvien`, để nếu sau này họ được thêm lại vào nhóm thì không còn giữ quyền cũ.
 
 ## Quy tắc đang dùng

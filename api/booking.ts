@@ -351,7 +351,8 @@ const COMMANDS = [
 ]
 
 type TgUser = { id: number; is_bot?: boolean; first_name?: string; last_name?: string; username?: string }
-type TgMessage = { message_id: number; chat: { id: number }; from?: TgUser; text?: string; reply_to_message?: TgMessage }
+// sender_chat: sent as the group (anonymous admin) or a channel. `from` is then Telegram's shared stand-in bot, not a person.
+type TgMessage = { message_id: number; chat: { id: number }; from?: TgUser; sender_chat?: { title?: string }; text?: string; reply_to_message?: TgMessage }
 type TgUpdate = { message?: TgMessage; callback_query?: { id: string; from: TgUser; data?: string; message?: TgMessage } }
 
 const userName = (u: TgUser) => [u.first_name, u.last_name].filter(Boolean).join(' ') || (u.username ? `@${u.username}` : String(u.id))
@@ -369,6 +370,9 @@ async function roleOf(u?: TgUser): Promise<Role> {
 const can = async (u: TgUser | undefined, need: Role) => RANK[await roleOf(u)] >= RANK[need]
 const setRole = (u: TgUser, role: Role) => redis('HSET', 'tg:roles', String(u.id), JSON.stringify({ role, name: userName(u) }))
 const MANAGERS_ONLY = 'Chỉ quản lý ca hoặc chủ quán mới làm được việc này.'
+const ANONYMOUS_SELF = 'Bạn đang gửi tin ẩn danh dưới tên nhóm, nên bot không biết bạn là ai. Tắt "Ẩn danh" (Remain anonymous) trong quyền quản trị của bạn rồi gõ lại.'
+const anonymousTarget = (title = '') => `Tin bạn trả lời được gửi dưới tên "${title}", không phải tên một người, nên bot không biết là ai. ` +
+  'Nếu người đó là quản trị viên đang bật "Ẩn danh" (Remain anonymous), nhờ họ tắt đi và nhắn một tin mới, rồi trả lời tin mới đó.'
 
 /** "chu", "chủ quán", "quanly", "Quản lý ca", "nhanvien", … → role. */
 function parseRole(words: string[]): Role | null {
@@ -415,6 +419,7 @@ async function onUpdate(u: TgUpdate) {
   if (cmd === '/batdau') {
     // First chat to register becomes the staff chat and its sender the first owner. After that only an owner
     // can move the bot, by sending /batdau in the new group; roles belong to people, so they carry over.
+    if (m.sender_chat) return reply(ANONYMOUS_SELF) // else the shared anonymous stand-in, i.e. any anonymous admin anywhere, would become owner
     if (await redis('SET', 'tg:chat', here, 'NX')) {
       await setRole(m.from, 'owner')
       return reply(`Đã gắn bot với nhóm này. ${userName(m.from)} là chủ quán.\n\n${HELP}`)
@@ -468,11 +473,12 @@ async function onUpdate(u: TgUpdate) {
       return reply([...list, 'Mọi người khác trong nhóm: Nhân viên.', '',
         'Chủ quán đổi quyền: trả lời (reply) tin nhắn của người đó bằng /quyen chu, /quyen quanly hoặc /quyen nhanvien.'].join('\n'))
     }
-    if (!(await can(m.from, 'owner'))) return reply('Chỉ chủ quán mới đổi quyền được.')
+    if (!(await can(m.from, 'owner'))) return reply(m.sender_chat ? ANONYMOUS_SELF : 'Chỉ chủ quán mới đổi quyền được.')
     const role = parseRole(args)
-    if (!role || !target || target.is_bot) {
-      return reply('Trả lời (reply) tin nhắn của người cần đổi quyền bằng /quyen chu, /quyen quanly hoặc /quyen nhanvien.')
-    }
+    if (!role) return reply('Quyền phải là chu, quanly hoặc nhanvien. Ví dụ: trả lời tin nhắn của người đó bằng /quyen quanly.')
+    if (m.reply_to_message?.sender_chat) return reply(anonymousTarget(m.reply_to_message.sender_chat.title))
+    if (!target) return reply('Trả lời (reply) tin nhắn của người cần đổi quyền bằng /quyen chu, /quyen quanly hoặc /quyen nhanvien.')
+    if (target.is_bot) return reply('Không phân quyền cho bot được.')
     const owners = (await roles()).filter(r => r.role === 'owner')
     if (role !== 'owner' && owners.length === 1 && owners[0].id === String(target.id)) return reply('Quán cần ít nhất một chủ quán.')
     await setRole(target, role)
