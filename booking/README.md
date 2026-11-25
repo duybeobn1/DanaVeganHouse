@@ -46,7 +46,8 @@ Khách → danaveganhouse.com/reserve → /api/booking (Vercel) → Upstash Redi
 | Khách gọi điện / nhắn Facebook | `/dat 26/11 19:00 6 Chị Mai 0912345678`. Ngày có thể ghi `nay` hoặc `mai`, giờ có thể ghi `19h` hoặc `19h30`, số điện thoại không bắt buộc. Nếu vượt 30 khách, chỉ quản lý ca hoặc chủ quán thêm được, và bot kèm cảnh báo. |
 | Xem tình hình | `/homnay`, `/homnay mai`, `/homnay 26/11`: số khách đang ngồi, chỗ trống từng khung giờ, danh sách bàn. |
 | Khách gọi điện xin huỷ | Quản lý ca gõ `/huy D1A2B3C` (mã có trong tin nhắn của bàn đó). |
-| Khách tự huỷ | Khách nhập mã đặt bàn và số điện thoại ở cuối trang `/reserve`. Nhóm nhận tin "❌ Khách tự huỷ" và các nút ở tin gốc biến mất. Chỉ huỷ online được trước giờ đến. |
+| Khách tự huỷ | Khách nhập mã đặt bàn và số điện thoại ở cuối trang `/reserve`. Nhóm nhận tin "❌ Khách tự huỷ" và các nút ở tin gốc biến mất. Chỉ huỷ online được trước giờ đến. Việc khách tự huỷ không hoàn tác được. |
+| Bấm nhầm | Sau khi bấm **Đã về**, **Không đến** hoặc **Huỷ** (hoặc gõ `/huy`), tin của bàn đó còn nút **↩️ Hoàn tác**. Quản lý ca hoặc chủ quán bấm nút này để đưa bàn về trạng thái trước và giữ chỗ lại. Nếu chỗ đã được nhường cho bàn khác, bot vẫn mở lại nhưng hiện cảnh báo vượt sức chứa. |
 
 Bot chỉ nghe lệnh trong nhóm đã gắn. Người lạ nhắn cho bot sẽ không nhận được gì.
 
@@ -61,6 +62,7 @@ Có 3 vai trò. Ai trong nhóm mà chưa được phân quyền thì là **Nhân
 | Ghi khách vãng lai `/khach`, bấm **Đã về** | ✓ | ✓ | ✓ |
 | Thêm bàn khách gọi điện `/dat` (còn chỗ) | ✓ | ✓ | ✓ |
 | Bấm **Không đến**, **Huỷ**, gõ `/huy` | | ✓ | ✓ |
+| Bấm **↩️ Hoàn tác** | | ✓ | ✓ |
 | `/dat` khi đã vượt 30 khách | | ✓ | ✓ |
 | Đổi quyền `/quyen` | | | ✓ |
 

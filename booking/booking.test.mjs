@@ -295,3 +295,64 @@ test('phone bookings from /dat start confirmed and /homnay flags web bookings st
   await say('/homnay')
   assert.match(lastText(), /18:00 · 2 khách · Minh · D[0-9A-F]{6}\n19:00 · 4 khách · Lan · 0912 345 678 · D[0-9A-F]{6} · ⏳ chờ xác nhận/)
 })
+
+const keyboard = () => calls('editMessageText').at(-1).body.reply_markup.inline_keyboard.map(row => row.map(b => b.text))
+
+test('Hoàn tác reopens a booking closed by mistake; only managers and owners may use it', async t => {
+  setup(t)
+  const { id } = await post(guest)
+  await press(`s:${id}:confirmed`, { from: STAFF_USER })
+  await press(`s:${id}:noshow`)
+  assert.equal(await seats('19:00'), 30)
+  assert.deepEqual(keyboard(), [['↩️ Hoàn tác']])
+
+  await press(`s:${id}:undo`, { from: STAFF_USER })
+  assert.equal(calls('answerCallbackQuery').at(-1).body.text, 'Chỉ quản lý ca hoặc chủ quán mới làm được việc này.')
+  assert.equal(await seats('19:00'), 30)
+
+  await press(`s:${id}:undo`)
+  assert.equal(calls('answerCallbackQuery').at(-1).body.text, `${id}: Đã xác nhận`)
+  assert.equal(await seats('19:00'), 26) // seats held again
+  assert.match(calls('editMessageText').at(-1).body.text, /Mã: D[0-9A-F]{6} · Đã xác nhận \(Duy hoàn tác\)$/)
+  assert.deepEqual(keyboard(), [['Đã về', 'Không đến', 'Huỷ']])
+  await press(`s:${id}:undo`) // nothing left to undo
+  assert.equal(calls('answerCallbackQuery').at(-1).body.text, 'Không đổi được')
+})
+
+test('a guest’s own cancellation cannot be undone', async t => {
+  setup(t)
+  const { id } = await post(guest)
+  await post({ action: 'cancel', id, phone: guest.phone })
+  assert.deepEqual(keyboard(), [])
+  await press(`s:${id}:undo`)
+  assert.equal(calls('answerCallbackQuery').at(-1).body.text, 'Không đổi được')
+  assert.equal(await seats('19:00'), 30)
+})
+
+test('undoing into a full slot reopens the booking but alerts the manager', async t => {
+  setup(t)
+  const { id } = await post(guest)
+  await say(`/huy ${id}`)
+  await say('/dat nay 19:00 28 Tiệc') // the freed seats are given away
+  await press(`s:${id}:undo`)
+  const answer = calls('answerCallbackQuery').at(-1).body
+  assert.equal(answer.text, `${id}: Chờ xác nhận · ⚠️ Vượt sức chứa 2 khách`)
+  assert.equal(answer.show_alert, true)
+  assert.equal(await seats('19:00'), 0)
+})
+
+test('a walk-in marked as left by mistake can be seated again', async t => {
+  setup(t, { now: `${DAY}T19:00:00+07:00` })
+  await say('/khach 3', { from: STAFF_USER })
+  const id = /Mã: (D[0-9A-F]{6})/.exec(lastText())[1]
+  await press(`s:${id}:left`, { from: STAFF_USER })
+  await say('/homnay')
+  assert.match(lastText(), /đang ngồi 0\/30/)
+  await press(`s:${id}:undo`, { from: MANAGER }) // Minh is still staff here, so refused
+  assert.equal(calls('answerCallbackQuery').at(-1).body.text, 'Chỉ quản lý ca hoặc chủ quán mới làm được việc này.')
+  await say('/quyen quanly', { replyTo: MANAGER })
+  await press(`s:${id}:undo`, { from: MANAGER })
+  assert.equal(calls('answerCallbackQuery').at(-1).body.text, `${id}: Đang ngồi`)
+  await say('/homnay')
+  assert.match(lastText(), /đang ngồi 3\/30/)
+})

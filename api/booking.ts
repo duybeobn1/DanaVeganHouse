@@ -20,6 +20,7 @@ type Booking = {
   email: string; note: string; source: Source; status: Status
   msg?: number // its Telegram message
   by?: string  // staff member who last changed the status
+  prev?: Status // status before it was closed, for undo
 }
 type Now = { date: string; min: number }
 type Req = Record<string, unknown>
@@ -39,6 +40,8 @@ const notFound: Fail = { ok: false, error: 'not_found' }
 const pad2 = (n: number) => String(n).padStart(2, '0')
 const digits = (v: unknown) => String(v ?? '').replace(/\D/g, '')
 const isActive = (b: Booking) => b.status === 'booked' || b.status === 'confirmed' || b.status === 'seated'
+// A guest's own online cancellation is final; staff mistakes can be undone.
+const canUndo = (b: Booking) => !isActive(b) && b.status !== 'guest_cancelled' && !!b.prev
 const dmy = (date: string) => date.split('-').reverse().join('/')
 const addDays = (date: string, n: number) => new Date(Date.parse(date) + n * 86400000).toISOString().slice(0, 10)
 const dayDiff = (a: string, b: string) => (Date.parse(b) - Date.parse(a)) / 86400000
@@ -234,8 +237,8 @@ function bookingText(b: Booking) {
 }
 
 function buttons(b: Booking) {
-  if (!isActive(b)) return { inline_keyboard: [] }
-  const row = (choices: [Status, string][]) => choices.map(([s, text]) => ({ text, callback_data: `s:${b.id}:${s}` }))
+  const row = (choices: [string, string][]) => choices.map(([action, text]) => ({ text, callback_data: `s:${b.id}:${action}` }))
+  if (!isActive(b)) return { inline_keyboard: canUndo(b) ? [row([['undo', '↩️ Hoàn tác']])] : [] }
   if (b.source === 'walk-in') return { inline_keyboard: [row([['left', 'Đã về']])] }
   const main = row([['left', 'Đã về'], ['noshow', 'Không đến'], ['cancelled', 'Huỷ']])
   return { inline_keyboard: b.status === 'booked' ? [row([['confirmed', '✅ Xác nhận']]), main] : [main] }
@@ -249,15 +252,25 @@ async function announce(b: Booking, extra: string) {
   if (sent) await save({ ...b, msg: sent.message_id })
 }
 
-async function setStatus(id: string, status: Status, by?: string) {
-  const b = await findById(id)
-  if (!b || !isActive(b)) return b // a stale button or repeat /huy must not bring a closed booking back
-  b.status = status
-  b.by = by
+/** Saves a booking and updates its message in the staff group. */
+async function commit(b: Booking) {
   await save(b)
   const chat = await staffChat()
   if (chat && b.msg) await tg('editMessageText', { chat_id: chat, message_id: b.msg, text: bookingText(b), reply_markup: buttons(b) })
   return b
+}
+
+async function setStatus(id: string, status: Status, by?: string) {
+  const b = await findById(id)
+  if (!b || !isActive(b)) return b // a stale button or repeat /huy must not bring a closed booking back; Hoàn tác does that
+  return commit({ ...b, prev: b.status, status, by })
+}
+
+/** Reopens a booking closed by mistake, back to the status it had. */
+async function undo(id: string, by: string) {
+  const b = await findById(id)
+  if (!b || !canUndo(b)) return null
+  return commit({ ...b, status: b.prev!, prev: undefined, by: `${by} hoàn tác` })
 }
 
 // ───────────────────────── Website actions ─────────────────────────
@@ -320,7 +333,7 @@ const HELP = [
   'Nút "Đã về" dưới mỗi bàn — bàn đã về, mở lại chỗ',
   '',
   'Quản lý ca và chủ quán:',
-  'Nút "Không đến", "Huỷ" — /huy D1A2B3C — /dat vượt sức chứa',
+  'Nút "Không đến", "Huỷ", "↩️ Hoàn tác" — /huy D1A2B3C — /dat vượt sức chứa',
   '',
   'Chủ quán:',
   'Trả lời (reply) tin nhắn của một người bằng /quyen chu, /quyen quanly hoặc /quyen nhanvien. Gõ /quyen để xem ai giữ quyền gì.',
@@ -367,16 +380,26 @@ async function onUpdate(u: TgUpdate) {
   const chat = await staffChat()
   const q = u.callback_query
   if (q) {
-    const [, id, status] = String(q.data).split(':') as [string, string, Status]
+    const [, id, action] = String(q.data).split(':') as [string, string, Status | 'undo']
     let text = 'Không đổi được'
-    if (String(q.message?.chat.id) === chat && BUTTON_STATUSES.includes(status)) {
-      if (MANAGER_STATUSES.includes(status) && !(await can(q.from, 'manager'))) text = MANAGERS_ONLY
-      else {
-        const b = await setStatus(id, status, userName(q.from))
-        if (b) text = `${b.id}: ${STATUS_VI[b.status]}`
+    let alert = false
+    if (String(q.message?.chat.id) !== chat) {
+      // a button from some other chat: ignore
+    } else if ((action === 'undo' || MANAGER_STATUSES.includes(action)) && !(await can(q.from, 'manager'))) {
+      text = MANAGERS_ONLY
+    } else if (action === 'undo') {
+      const b = await undo(id, userName(q.from))
+      if (b) {
+        // The seats may have gone to someone else meanwhile: reopen anyway, but make the manager see it.
+        const over = peakOccupancy(await dayRows(b.date), toMinutes(b.time)) - CAPACITY
+        text = `${b.id}: ${STATUS_VI[b.status]}${over > 0 ? ` · ⚠️ Vượt sức chứa ${over} khách` : ''}`
+        alert = over > 0
       }
+    } else if (BUTTON_STATUSES.includes(action)) {
+      const b = await setStatus(id, action, userName(q.from))
+      if (b) text = `${b.id}: ${STATUS_VI[b.status]}`
     }
-    await tg('answerCallbackQuery', { callback_query_id: q.id, text })
+    await tg('answerCallbackQuery', { callback_query_id: q.id, text, show_alert: alert })
     return
   }
   const m = u.message
