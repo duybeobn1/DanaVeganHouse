@@ -1,6 +1,8 @@
 import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../context/LanguageContext'
+import ReserveLink from '../components/ReserveLink'
+import { bookingEnabled } from '../lib/booking'
 import { featuredDishes, ingredientRegions, mamNha } from '../data/menuData'
 import { motion, useInView } from 'motion/react'
 import { Grains, MapPin, House, Clock, Phone, Star, Lamp, ArrowRight } from '@phosphor-icons/react'
@@ -46,9 +48,9 @@ export default function Home() {
             <Link to="/menu" className="inline-flex items-center px-8 py-3.5 text-sm font-bold tracking-widest uppercase border-2 border-cream text-cream hover:bg-cream hover:text-earth rounded-full transition-all duration-300">
               {t('Xem Thực Đơn', 'View Menu')}
             </Link>
-            <a href="tel:0828744931" className="inline-flex items-center px-8 py-3.5 text-sm font-bold tracking-widest uppercase bg-cream text-earth rounded-full transition-all duration-300">
-              {t('Gọi Đặt Bàn', 'Reserve a Table')}
-            </a>
+            <ReserveLink className="inline-flex items-center px-8 py-3.5 text-sm font-bold tracking-widest uppercase bg-cream text-earth rounded-full transition-all duration-300">
+              {bookingEnabled ? t('Đặt Bàn', 'Reserve a Table') : t('Gọi Đặt Bàn', 'Reserve a Table')}
+            </ReserveLink>
           </div>
         </div>
 

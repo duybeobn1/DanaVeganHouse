@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { useLanguage } from '../context/LanguageContext'
 import { Link } from 'react-router-dom'
+import { bookingEnabled } from '../lib/booking'
 import { motion, useInView } from 'motion/react'
 
 
@@ -165,6 +166,7 @@ export default function Contact() {
           <p className="text-cream font-black text-3xl md:text-4xl mb-4">{t('Đặt Bàn Ngay', 'Reserve a Table')}</p>
           <p className="text-cream/80 text-sm mb-8">{t('Chúng tôi rất mong được phục vụ bạn!', 'We look forward to serving you!')}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {bookingEnabled && <Link to="/reserve" className="px-8 py-3 text-sm font-bold tracking-widest uppercase bg-cream text-earth rounded-full hover:bg-rice transition-all duration-300 btn-magnetic">{t('Đặt Online', 'Book Online')}</Link>}
             <a href="tel:0828744931" className="px-8 py-3 text-sm font-bold tracking-widest uppercase bg-cream text-earth rounded-full hover:bg-rice transition-all duration-300 btn-magnetic">{t('Gọi Ngay', 'Call Now')}</a>
             <Link to="/menu" className="px-8 py-3 text-sm font-bold tracking-widest uppercase border-2 border-cream text-cream rounded-full hover:bg-cream hover:text-earth transition-all duration-300 btn-magnetic">{t('Xem Thực Đơn', 'View Menu')}</Link>
           </div>
