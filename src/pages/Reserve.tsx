@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { useLanguage } from '../context/LanguageContext'
-import { bookingEnabled, getAvailability, post, todayInHanoi, PHONE, PHONE_DISPLAY } from '../lib/booking'
-import type { Slot } from '../lib/booking'
+import { bookingEnabled, getAvailability, post, todayInHanoi, EMAIL, PHONE, PHONE_DISPLAY } from '../lib/booking'
+import type { ApiError, Slot } from '../lib/booking'
 
 const MAX_GUESTS = 10
 const MAX_DAYS_AHEAD = 60
@@ -13,7 +13,7 @@ const label = 'block text-xs font-bold tracking-[0.2em] uppercase text-brand mb-
 export default function Reserve() {
   const { t } = useLanguage()
   const [date, setDate] = useState(todayInHanoi())
-  const [guests, setGuests] = useState(2)
+  const [guests, setGuests] = useState('2') // typed text, so the field can be empty while editing
   const [time, setTime] = useState('')
   const [slots, setSlots] = useState<Slot[] | null>(null)
   const [loadError, setLoadError] = useState(false)
@@ -38,7 +38,10 @@ export default function Reserve() {
     return () => { live = false }
   }, [date, reload])
 
-  const usable = (s: Slot) => s.open && s.remaining >= guests
+  const party = Number(guests)
+  const tooMany = party > MAX_GUESTS
+  const partyOk = Number.isInteger(party) && party >= 1 && !tooMany
+  const usable = (s: Slot) => partyOk && s.open && s.remaining >= party
 
   // A time picked earlier may no longer fit after the date, party size or availability changes.
   useEffect(() => {
@@ -50,7 +53,7 @@ export default function Reserve() {
     too_soon: t('Khung giờ này đã quá gần. Vui lòng chọn giờ khác hoặc gọi cho Dāna.', 'This time is too soon. Please pick another time or call Dāna.'),
     invalid_date: t(`Vui lòng chọn ngày trong ${MAX_DAYS_AHEAD} ngày tới.`, `Please choose a date within the next ${MAX_DAYS_AHEAD} days.`),
     invalid_time: t('Vui lòng chọn giờ.', 'Please choose a time.'),
-    invalid_guests: t(`Nhóm trên ${MAX_GUESTS} khách vui lòng gọi ${PHONE_DISPLAY}.`, `For groups over ${MAX_GUESTS}, please call ${PHONE_DISPLAY}.`),
+    invalid_guests: t(`Đặt online từ 1 đến ${MAX_GUESTS} khách. Nhóm đông hơn vui lòng gọi ${PHONE_DISPLAY} hoặc email ${EMAIL}.`, `Online booking is for 1–${MAX_GUESTS} guests. For larger groups, please call ${PHONE_DISPLAY} or email ${EMAIL}.`),
     invalid_name: t('Vui lòng nhập tên.', 'Please enter your name.'),
     invalid_phone: t('Số điện thoại chưa đúng.', 'Please check your phone number.'),
     invalid_email: t('Email chưa đúng.', 'Please check your email.'),
@@ -62,11 +65,12 @@ export default function Reserve() {
 
   async function submit(e: FormEvent) {
     e.preventDefault()
+    if (!partyOk) return setError(messages.invalid_guests)
     if (!time) return setError(messages.invalid_time)
     setSending(true)
     setError('')
     try {
-      const res = await post({ action: 'book', date, time, guests, ...form })
+      const res = await post({ action: 'book', date, time, guests: party, ...form })
       if (res.ok) setDone({ id: res.id })
       else {
         setError(messages[res.error] ?? failMessage)
@@ -108,7 +112,8 @@ export default function Reserve() {
               <p className="text-earth/70 mb-6">{t(`${guests} khách · ${form.name}`, `${guests} guests · ${form.name}`)}</p>
               <p className="text-earth/60 text-sm">{t('Mã đặt bàn', 'Booking code')}: <span className="font-bold text-earth">{done.id}</span></p>
               <p className="text-earth/60 text-sm mt-4">
-                {t('Dāna giữ bàn cho bạn. Cần thay đổi hoặc huỷ, vui lòng gọi', 'Your table is held. To change or cancel, please call')}{' '}
+                {t('Dāna giữ bàn cho bạn. Hãy lưu mã này để tự huỷ ở mục "Huỷ bàn đã đặt" bên dưới. Cần thay đổi, vui lòng gọi',
+                  'Your table is held. Keep this code to cancel online under "Cancel a booking" below. To change it, please call')}{' '}
                 <a href={`tel:${PHONE}`} className="font-bold text-earth underline">{PHONE_DISPLAY}</a>
               </p>
             </div>
@@ -123,14 +128,13 @@ export default function Reserve() {
                 </div>
                 <div>
                   <label htmlFor="guests" className={label}>{t('Số khách', 'Guests')}</label>
-                  <select id="guests" className={field} value={guests} onChange={e => setGuests(Number(e.target.value))}>
-                    {Array.from({ length: MAX_GUESTS }, (_, i) => i + 1).map(n => (
-                      <option key={n} value={n}>{t(`${n} khách`, `${n} ${n === 1 ? 'guest' : 'guests'}`)}</option>
-                    ))}
-                  </select>
-                  <p className="text-earth/50 text-xs mt-2">
-                    {t(`Trên ${MAX_GUESTS} khách, vui lòng gọi`, `Over ${MAX_GUESTS} guests, please call`)}{' '}
-                    <a href={`tel:${PHONE}`} className="underline">{PHONE_DISPLAY}</a>
+                  <input id="guests" type="number" inputMode="numeric" required min={1} max={MAX_GUESTS} step={1}
+                    className={field} value={guests} onChange={e => setGuests(e.target.value)} />
+                  <p className={`text-xs mt-2 ${tooMany ? 'text-brand-dark font-semibold' : 'text-earth/50'}`} role={tooMany ? 'alert' : undefined}>
+                    {t(`Tối đa ${MAX_GUESTS} khách. Nhóm đông hơn vui lòng gọi`, `Up to ${MAX_GUESTS} guests. For larger groups, call`)}{' '}
+                    <a href={`tel:${PHONE}`} className="underline">{PHONE_DISPLAY}</a>{' '}
+                    {t('hoặc email', 'or email')}{' '}
+                    <a href={`mailto:${EMAIL}`} className="underline whitespace-nowrap">{EMAIL}</a>
                   </p>
                 </div>
               </div>
@@ -144,6 +148,8 @@ export default function Reserve() {
                   </p>
                 ) : !slots ? (
                   <p className="text-sm text-earth/50" aria-live="polite">{t('Đang tải giờ trống…', 'Loading available times…')}</p>
+                ) : !partyOk ? (
+                  <p className="text-sm text-earth/50">{t(`Nhập số khách (1–${MAX_GUESTS}) để xem giờ trống.`, `Enter 1–${MAX_GUESTS} guests to see available times.`)}</p>
                 ) : !slots.some(usable) ? (
                   <p className="text-sm text-earth/70">
                     {t('Ngày này không còn khung giờ phù hợp. Vui lòng chọn ngày khác hoặc gọi', 'No times left for this party size on this day. Please pick another day or call')}{' '}
@@ -201,8 +207,76 @@ export default function Reserve() {
               </button>
             </form>
           )}
+          {bookingEnabled && <CancelBooking />}
         </div>
       </section>
     </main>
+  )
+}
+
+/** Guest cancels their own booking with the code from the confirmation screen plus their phone number. */
+function CancelBooking() {
+  const { t } = useLanguage()
+  const [id, setId] = useState('')
+  const [phone, setPhone] = useState('')
+  const [sending, setSending] = useState(false)
+  const [error, setError] = useState('')
+  const [done, setDone] = useState<{ date: string; time: string; guests: number } | null>(null)
+
+  const messages: Record<string, string> = {
+    not_found: t('Không tìm thấy đặt bàn với mã và số điện thoại này.', 'No booking found with this code and phone number.'),
+    inactive: t('Đặt bàn này đã được huỷ trước đó.', 'This booking has already been cancelled.'),
+    past: t(`Đã đến giờ đặt bàn nên không huỷ online được. Vui lòng gọi ${PHONE_DISPLAY}.`, `This booking has already started and cannot be cancelled online. Please call ${PHONE_DISPLAY}.`),
+    busy: t('Hệ thống đang bận. Vui lòng thử lại sau ít phút.', 'The system is busy. Please try again in a few minutes.'),
+  }
+  const cancelFail = t(`Chưa huỷ được. Vui lòng thử lại hoặc gọi ${PHONE_DISPLAY}.`, `Could not cancel. Please try again or call ${PHONE_DISPLAY}.`)
+
+  async function submit(e: FormEvent) {
+    e.preventDefault()
+    if (!window.confirm(t('Huỷ đặt bàn này?', 'Cancel this booking?'))) return
+    setSending(true)
+    setError('')
+    try {
+      const res = await post<{ ok: true; date: string; time: string; guests: number } | ApiError>({ action: 'cancel', id, phone })
+      if (res.ok) setDone(res)
+      else setError(messages[res.error] ?? cancelFail)
+    } catch {
+      setError(cancelFail)
+    } finally {
+      setSending(false)
+    }
+  }
+
+  return (
+    <details className="mt-6 bg-rice rounded-[2rem] px-6 py-5 md:px-10 shadow-ambient">
+      <summary className="cursor-pointer text-sm font-bold text-earth">{t('Huỷ bàn đã đặt', 'Cancel a booking')}</summary>
+      {done ? (
+        <p role="status" className="mt-4 text-earth">
+          {t(`Đã huỷ bàn ${done.time} · ${done.date.split('-').reverse().join('/')} · ${done.guests} khách. Hẹn gặp bạn dịp khác!`,
+            `Cancelled: ${done.time} · ${done.date.split('-').reverse().join('/')} · ${done.guests} guests. Hope to see you another time!`)}
+        </p>
+      ) : (
+        <form onSubmit={submit} className="mt-6 space-y-6">
+          <p className="text-earth/60 text-sm">{t('Nhập mã đặt bàn và số điện thoại đã dùng khi đặt.', 'Enter your booking code and the phone number you booked with.')}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="cancel-id" className={label}>{t('Mã đặt bàn', 'Booking code')}</label>
+              <input id="cancel-id" required maxLength={12} autoCapitalize="characters" autoComplete="off" placeholder="D1A2B3C"
+                className={`${field} uppercase`} value={id} onChange={e => setId(e.target.value)} />
+            </div>
+            <div>
+              <label htmlFor="cancel-phone" className={label}>{t('Số điện thoại', 'Phone')}</label>
+              <input id="cancel-phone" type="tel" required maxLength={20} autoComplete="tel" inputMode="tel"
+                className={field} value={phone} onChange={e => setPhone(e.target.value)} />
+            </div>
+          </div>
+          {error && <p role="alert" className="text-sm font-semibold text-brand-dark">{error}</p>}
+          <button type="submit" disabled={sending}
+            className="w-full py-3 text-sm font-bold tracking-widest uppercase border border-brand text-brand rounded-full hover:bg-brand hover:text-cream disabled:opacity-60 transition-all duration-300">
+            {sending ? t('Đang gửi…', 'Sending…') : t('Huỷ bàn', 'Cancel booking')}
+          </button>
+        </form>
+      )}
+    </details>
   )
 }

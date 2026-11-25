@@ -8,7 +8,6 @@ import Menu from './pages/Menu'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import Reserve from './pages/Reserve'
-import Staff from './pages/Staff'
 import { AnimatePresence, motion } from 'motion/react'
 
 function AnimatedRoutes() {
@@ -29,7 +28,6 @@ function AnimatedRoutes() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/reserve" element={<Reserve />} />
-          <Route path="/staff" element={<Staff />} />
         </Routes>
       </motion.div>
     </AnimatePresence>
