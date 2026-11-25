@@ -41,7 +41,7 @@ Khách → danaveganhouse.com/reserve → /api/booking (Vercel) → Upstash Redi
 
 | Việc | Cách làm |
 |---|---|
-| Bàn đặt online | Hiện thành tin nhắn có nút **Đã về · Không đến · Huỷ**. Bấm khi bàn về sớm, không đến hoặc huỷ để mở lại chỗ. |
+| Bàn đặt online | Hiện thành tin nhắn "Chờ xác nhận" có nút **✅ Xác nhận** và **Đã về · Không đến · Huỷ**. Gọi hoặc nhắn lại khách, rồi bấm **Xác nhận**: tin đổi thành "Đã xác nhận (tên người bấm)". Bàn vẫn được giữ chỗ ngay từ lúc khách đặt, kể cả khi chưa xác nhận. `/homnay` đánh dấu ⏳ các bàn chưa xác nhận. |
 | Khách vãng lai | `/khach 5` (có thể thêm ghi chú: `/khach 5 bàn ngoài`). Bot báo số khách đang ngồi. Khi nhóm đó về, bấm **Đã về** dưới tin nhắn. |
 | Khách gọi điện / nhắn Facebook | `/dat 26/11 19:00 6 Chị Mai 0912345678`. Ngày có thể ghi `nay` hoặc `mai`, giờ có thể ghi `19h` hoặc `19h30`, số điện thoại không bắt buộc. Nếu vượt 30 khách, chỉ quản lý ca hoặc chủ quán thêm được, và bot kèm cảnh báo. |
 | Xem tình hình | `/homnay`, `/homnay mai`, `/homnay 26/11`: số khách đang ngồi, chỗ trống từng khung giờ, danh sách bàn. |
@@ -57,6 +57,7 @@ Có 3 vai trò. Ai trong nhóm mà chưa được phân quyền thì là **Nhân
 | Việc | Nhân viên | Quản lý ca | Chủ quán |
 |---|---|---|---|
 | Nhận tin đặt bàn, xem `/homnay` | ✓ | ✓ | ✓ |
+| Bấm **✅ Xác nhận** bàn đặt online | ✓ | ✓ | ✓ |
 | Ghi khách vãng lai `/khach`, bấm **Đã về** | ✓ | ✓ | ✓ |
 | Thêm bàn khách gọi điện `/dat` (còn chỗ) | ✓ | ✓ | ✓ |
 | Bấm **Không đến**, **Huỷ**, gõ `/huy` | | ✓ | ✓ |

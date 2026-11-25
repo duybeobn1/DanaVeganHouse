@@ -13,21 +13,24 @@ const MAX_DAYS_AHEAD = 60
 const MIN_LEAD_MINUTES = 30     // no online booking for a slot starting sooner than this
 const TZ = 'Asia/Ho_Chi_Minh'
 
-type Status = 'booked' | 'seated' | 'left' | 'noshow' | 'cancelled' | 'guest_cancelled'
+type Status = 'booked' | 'confirmed' | 'seated' | 'left' | 'noshow' | 'cancelled' | 'guest_cancelled'
 type Source = 'web' | 'phone' | 'walk-in'
 type Booking = {
   id: string; createdAt: string; date: string; time: string; guests: number; name: string; phone: string
-  email: string; note: string; source: Source; status: Status; msg?: number // msg: its Telegram message
+  email: string; note: string; source: Source; status: Status
+  msg?: number // its Telegram message
+  by?: string  // staff member who last changed the status
 }
 type Now = { date: string; min: number }
 type Req = Record<string, unknown>
 type Fail = { ok: false; error: string; remaining?: number }
 
 const STATUS_VI: Record<Status, string> = {
-  booked: 'Đã nhận', seated: 'Đang ngồi', left: 'Đã về', noshow: 'Không đến', cancelled: 'Huỷ', guest_cancelled: 'Khách tự huỷ',
+  booked: 'Chờ xác nhận', confirmed: 'Đã xác nhận', seated: 'Đang ngồi', left: 'Đã về', noshow: 'Không đến', cancelled: 'Huỷ', guest_cancelled: 'Khách tự huỷ',
 }
 const TITLE: Record<Source, string> = { web: '🆕 Đặt bàn qua website', phone: '📞 Đặt bàn qua điện thoại', 'walk-in': '🚶 Khách vãng lai' }
-const BUTTON_STATUSES: Status[] = ['left', 'noshow', 'cancelled']
+const BUTTON_STATUSES: Status[] = ['confirmed', 'left', 'noshow', 'cancelled']
+const MANAGER_STATUSES: Status[] = ['noshow', 'cancelled']
 const busy: Fail = { ok: false, error: 'busy' }
 const notFound: Fail = { ok: false, error: 'not_found' }
 
@@ -35,7 +38,7 @@ const notFound: Fail = { ok: false, error: 'not_found' }
 
 const pad2 = (n: number) => String(n).padStart(2, '0')
 const digits = (v: unknown) => String(v ?? '').replace(/\D/g, '')
-const isActive = (b: Booking) => b.status === 'booked' || b.status === 'seated'
+const isActive = (b: Booking) => b.status === 'booked' || b.status === 'confirmed' || b.status === 'seated'
 const dmy = (date: string) => date.split('-').reverse().join('/')
 const addDays = (date: string, n: number) => new Date(Date.parse(date) + n * 86400000).toISOString().slice(0, 10)
 const dayDiff = (a: string, b: string) => (Date.parse(b) - Date.parse(a)) / 86400000
@@ -187,25 +190,34 @@ async function withDayLock<T>(date: string, fn: () => Promise<T>): Promise<T | F
 
 // ───────────────────────── Telegram ─────────────────────────
 
-async function tg<T = unknown>(method: string, body: object): Promise<T | null> {
-  const token = process.env.TELEGRAM_BOT_TOKEN
-  if (!token) return null
+// Pasted tokens often carry spaces or quotes; Telegram then answers "Not Found".
+const botToken = () => (process.env.TELEGRAM_BOT_TOKEN ?? '').trim().replace(/^["']|["']$/g, '')
+
+async function tgCall<T>(method: string, body: object): Promise<{ ok: boolean; result?: T; description?: string }> {
+  const token = botToken()
+  if (!token) return { ok: false, description: 'no token' }
   try {
     const res = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
       method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body),
     })
     const out = (await res.json()) as { ok: boolean; result?: T; description?: string }
     if (!out.ok) console.error(`telegram ${method}: ${out.description}`)
-    return out.ok ? (out.result ?? null) : null
+    return out
   } catch (err) {
-    console.error(`telegram ${method}: ${err}`) // a failed message never undoes a saved booking
-    return null
+    console.error(`telegram ${method}: ${err}`)
+    return { ok: false, description: String(err) }
   }
+}
+
+/** Bot API call that never throws: a failed message never undoes a saved booking. */
+async function tg<T = unknown>(method: string, body: object): Promise<T | null> {
+  const out = await tgCall<T>(method, body)
+  return out.ok ? (out.result ?? null) : null
 }
 
 /** Telegram sends this back in a header on every webhook call; derived from the token so there is nothing else to configure. */
 const webhookSecret = () => {
-  const token = process.env.TELEGRAM_BOT_TOKEN
+  const token = botToken()
   return token ? createHash('sha256').update(`webhook:${token}`).digest('hex').slice(0, 48) : null
 }
 const staffChat = () => redis<string | null>('GET', 'tg:chat')
@@ -217,14 +229,16 @@ function bookingText(b: Booking) {
     b.source === 'walk-in' ? null : `${b.name}${b.phone ? ` · ${b.phone}` : ''}`,
     b.email ? `Email: ${b.email}` : null,
     b.note ? `Ghi chú: ${b.note}` : null,
-    `Mã: ${b.id} · ${STATUS_VI[b.status]}`,
+    `Mã: ${b.id} · ${STATUS_VI[b.status]}${b.by ? ` (${b.by})` : ''}`,
   ].filter(Boolean).join('\n')
 }
 
 function buttons(b: Booking) {
   if (!isActive(b)) return { inline_keyboard: [] }
-  const choices: [Status, string][] = b.source === 'walk-in' ? [['left', 'Đã về']] : [['left', 'Đã về'], ['noshow', 'Không đến'], ['cancelled', 'Huỷ']]
-  return { inline_keyboard: [choices.map(([s, text]) => ({ text, callback_data: `s:${b.id}:${s}` }))] }
+  const row = (choices: [Status, string][]) => choices.map(([s, text]) => ({ text, callback_data: `s:${b.id}:${s}` }))
+  if (b.source === 'walk-in') return { inline_keyboard: [row([['left', 'Đã về']])] }
+  const main = row([['left', 'Đã về'], ['noshow', 'Không đến'], ['cancelled', 'Huỷ']])
+  return { inline_keyboard: b.status === 'booked' ? [row([['confirmed', '✅ Xác nhận']]), main] : [main] }
 }
 
 /** Posts a booking to the staff group and remembers the message so later status changes can edit it. */
@@ -235,10 +249,11 @@ async function announce(b: Booking, extra: string) {
   if (sent) await save({ ...b, msg: sent.message_id })
 }
 
-async function setStatus(id: string, status: Status) {
+async function setStatus(id: string, status: Status, by?: string) {
   const b = await findById(id)
-  if (!b) return null
+  if (!b || !isActive(b)) return b // a stale button or repeat /huy must not bring a closed booking back
   b.status = status
+  b.by = by
   await save(b)
   const chat = await staffChat()
   if (chat && b.msg) await tg('editMessageText', { chat_id: chat, message_id: b.msg, text: bookingText(b), reply_markup: buttons(b) })
@@ -301,6 +316,7 @@ const HELP = [
   '/khach 5 — ghi 5 khách vãng lai vừa vào',
   '/homnay — đang ngồi, chỗ trống, danh sách (/homnay mai, /homnay 26/11)',
   '/dat 26/11 19:00 6 Lan 0912345678 — thêm bàn khách gọi điện đặt',
+  'Nút "✅ Xác nhận" — đã gọi hoặc nhắn lại khách đặt online',
   'Nút "Đã về" dưới mỗi bàn — bàn đã về, mở lại chỗ',
   '',
   'Quản lý ca và chủ quán:',
@@ -354,9 +370,9 @@ async function onUpdate(u: TgUpdate) {
     const [, id, status] = String(q.data).split(':') as [string, string, Status]
     let text = 'Không đổi được'
     if (String(q.message?.chat.id) === chat && BUTTON_STATUSES.includes(status)) {
-      if (status !== 'left' && !(await can(q.from, 'manager'))) text = MANAGERS_ONLY
+      if (MANAGER_STATUSES.includes(status) && !(await can(q.from, 'manager'))) text = MANAGERS_ONLY
       else {
-        const b = await setStatus(id, status)
+        const b = await setStatus(id, status, userName(q.from))
         if (b) text = `${b.id}: ${STATUS_VI[b.status]}`
       }
     }
@@ -400,7 +416,7 @@ async function onUpdate(u: TgUpdate) {
       return reply('Cú pháp: /dat 26/11 19:00 6 Lan 0912345678\n(ngày có thể là "nay" hoặc "mai"; số điện thoại không bắt buộc)')
     }
     const fields = { date, time: fromMinutes(start), guests, name: clean(rest.join(' '), 80), phone, email: '', note: '',
-      source: 'phone' as const, status: 'booked' as const }
+      source: 'phone' as const, status: 'confirmed' as const } // staff took the call, so it is confirmed
     const rows = await dayRows(date)
     const left = CAPACITY - peakOccupancy([...rows, { ...fields, id: '', createdAt: '' }], start)
     // Over capacity is a manager's call; the booking is then kept with a warning.
@@ -409,8 +425,11 @@ async function onUpdate(u: TgUpdate) {
   }
   if (cmd === '/huy') {
     if (!(await can(m.from, 'manager'))) return reply(MANAGERS_ONLY)
-    const b = await setStatus(String(args[0] ?? '').toUpperCase(), 'cancelled')
-    return reply(b ? `Đã huỷ ${b.id}: ${b.time} ${dmy(b.date)} · ${b.guests} khách · ${b.name}` : 'Không tìm thấy mã này. Cú pháp: /huy D1A2B3C')
+    const b = await setStatus(String(args[0] ?? '').toUpperCase(), 'cancelled', userName(m.from))
+    if (!b) return reply('Không tìm thấy mã này. Cú pháp: /huy D1A2B3C')
+    return reply(b.status === 'cancelled'
+      ? `Đã huỷ ${b.id}: ${b.time} ${dmy(b.date)} · ${b.guests} khách · ${b.name}`
+      : `${b.id} đã ở trạng thái "${STATUS_VI[b.status]}", không huỷ nữa.`)
   }
   if (cmd === '/quyen') {
     const target = m.reply_to_message?.from
@@ -435,7 +454,7 @@ async function onUpdate(u: TgUpdate) {
     if (!date) return reply('Cú pháp: /homnay, /homnay mai, /homnay 26/11')
     const rows = await dayRows(date)
     const list = rows.filter(isActive).sort((a, b) => a.time.localeCompare(b.time))
-      .map(b => `${b.time} · ${b.guests} khách · ${b.source === 'walk-in' ? 'vãng lai' : `${b.name}${b.phone ? ` · ${b.phone}` : ''}`} · ${b.id}`)
+      .map(b => `${b.time} · ${b.guests} khách · ${b.source === 'walk-in' ? 'vãng lai' : `${b.name}${b.phone ? ` · ${b.phone}` : ''}`} · ${b.id}${b.status === 'booked' ? ' · ⏳ chờ xác nhận' : ''}`)
     const slots = availability(rows, date, now).slots.filter(s => s.open).map(s => `${s.time} còn ${s.remaining}`)
     return reply([
       date === now.date ? `Hôm nay ${dmy(date)} · đang ngồi ${occupancyAt(rows, now.min)}/${CAPACITY}` : `Ngày ${dmy(date)}`,
@@ -450,13 +469,16 @@ async function onUpdate(u: TgUpdate) {
 
 /** Points the bot's webhook at this deployment and fills its command menu. Safe to call again. */
 async function setupTelegram(origin: string) {
-  if (!process.env.TELEGRAM_BOT_TOKEN) return { ok: false, error: 'TELEGRAM_BOT_TOKEN chưa được đặt trên Vercel' }
+  if (!botToken()) return { ok: false, error: 'TELEGRAM_BOT_TOKEN chưa được đặt trên Vercel' }
   const url = `${origin}/api/booking`
-  const hooked = await tg('setWebhook', { url, secret_token: webhookSecret(), allowed_updates: ['message', 'callback_query'] })
+  const hook = await tgCall('setWebhook', { url, secret_token: webhookSecret(), allowed_updates: ['message', 'callback_query'] })
+  if (!hook.ok) {
+    const badToken = /unauthorized|not found/i.test(hook.description ?? '')
+    return { ok: false, webhook: url, telegram: hook.description,
+      error: badToken ? 'Token sai hoặc đã bị thu hồi: dán token mới nhất từ BotFather vào TELEGRAM_BOT_TOKEN trên Vercel, rồi Redeploy.' : 'Telegram từ chối webhook.' }
+  }
   await tg('setMyCommands', { commands: COMMANDS })
-  return hooked
-    ? { ok: true, webhook: url, next: 'Thêm bot vào nhóm Telegram của quán rồi gõ /batdau trong nhóm.' }
-    : { ok: false, error: 'Telegram từ chối webhook: kiểm tra lại TELEGRAM_BOT_TOKEN' }
+  return { ok: true, webhook: url, next: 'Thêm bot vào nhóm Telegram của quán rồi gõ /batdau trong nhóm.' }
 }
 
 // ───────────────────────── HTTP ─────────────────────────

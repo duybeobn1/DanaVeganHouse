@@ -49,8 +49,8 @@ test('a web booking is saved and posted to the staff group with buttons', async 
   assert.equal(await seats('19:00'), 26)
   const msg = calls('sendMessage').at(-1).body
   assert.equal(msg.chat_id, String(STAFF))
-  assert.match(msg.text, /25\/11\/2026 · 19:00 · 4 khách\nLan · 0912 345 678\nMã: D[0-9A-F]{6} · Đã nhận\nChỗ còn lại khung 19:00: 26\/30/)
-  assert.deepEqual(msg.reply_markup.inline_keyboard[0].map(b => b.text), ['Đã về', 'Không đến', 'Huỷ'])
+  assert.match(msg.text, /25\/11\/2026 · 19:00 · 4 khách\nLan · 0912 345 678\nMã: D[0-9A-F]{6} · Chờ xác nhận\nChỗ còn lại khung 19:00: 26\/30/)
+  assert.deepEqual(msg.reply_markup.inline_keyboard.map(row => row.map(b => b.text)), [['✅ Xác nhận'], ['Đã về', 'Không đến', 'Huỷ']])
 })
 
 test('before a staff group is registered, bookings still work and nothing is sent', async t => {
@@ -164,7 +164,7 @@ test('staff buttons change a booking’s status, free its seats, and update the 
   assert.equal(await seats('19:00'), 26)
   await press(`s:${id}:noshow`)
   assert.equal(await seats('19:00'), 30)
-  assert.match(calls('editMessageText').at(-1).body.text, /Không đến$/)
+  assert.match(calls('editMessageText').at(-1).body.text, /Không đến \(Duy\)$/)
   assert.equal(calls('answerCallbackQuery').at(-1).body.text, `${id}: Không đến`)
 })
 
@@ -247,4 +247,51 @@ test('/dat over capacity needs a manager or owner', async t => {
   await say('/dat nay 19:00 4 Lan')
   assert.match(lastText(), /⚠️ Vượt sức chứa 2 khách/)
   assert.equal(await seats('19:00'), 0)
+})
+
+test('telegram-setup reports Telegram\'s own reason when it refuses', async t => {
+  setup(t)
+  fakes.telegramErrors.setWebhook = 'Unauthorized'
+  const res = await get({ action: 'telegram-setup' })
+  assert.equal(res.ok, false)
+  assert.equal(res.telegram, 'Unauthorized')
+  assert.match(res.error, /^Token sai hoặc đã bị thu hồi/)
+})
+
+test('a token pasted with spaces or quotes still works', async t => {
+  setup(t)
+  process.env.TELEGRAM_BOT_TOKEN = ' "123:test"\n'
+  t.after(() => { process.env.TELEGRAM_BOT_TOKEN = '123:test' })
+  assert.equal((await get({ action: 'telegram-setup' })).ok, true)
+  assert.equal(calls('setWebhook')[0].body.secret_token, SECRET)
+  await say('/quyen')
+  assert.match(lastText(), /^Chủ quán: Duy/)
+})
+
+test('any staff member can confirm a web booking; the seats stay held and closed bookings stay closed', async t => {
+  setup(t)
+  const { id } = await post(guest)
+  await press(`s:${id}:confirmed`, { from: STAFF_USER })
+  const edit = calls('editMessageText').at(-1).body
+  assert.match(edit.text, /Mã: D[0-9A-F]{6} · Đã xác nhận \(Hoa\)$/)
+  assert.deepEqual(edit.reply_markup.inline_keyboard.map(row => row.map(b => b.text)), [['Đã về', 'Không đến', 'Huỷ']])
+  assert.equal(await seats('19:00'), 26)
+
+  await press(`s:${id}:cancelled`)
+  assert.equal(await seats('19:00'), 30)
+  await press(`s:${id}:confirmed`, { from: STAFF_USER }) // stale button on an old message
+  assert.equal(calls('answerCallbackQuery').at(-1).body.text, `${id}: Huỷ`)
+  assert.equal(await seats('19:00'), 30)
+  await say(`/huy ${id}`)
+  assert.match(lastText(), /^Đã huỷ /)
+})
+
+test('phone bookings from /dat start confirmed and /homnay flags web bookings still to confirm', async t => {
+  setup(t)
+  await say('/dat nay 18:00 2 Minh')
+  assert.match(lastText(), /Mã: D[0-9A-F]{6} · Đã xác nhận\n/)
+  assert.deepEqual(calls('sendMessage').at(-1).body.reply_markup.inline_keyboard.map(row => row.map(b => b.text)), [['Đã về', 'Không đến', 'Huỷ']])
+  await post(guest)
+  await say('/homnay')
+  assert.match(lastText(), /18:00 · 2 khách · Minh · D[0-9A-F]{6}\n19:00 · 4 khách · Lan · 0912 345 678 · D[0-9A-F]{6} · ⏳ chờ xác nhận/)
 })

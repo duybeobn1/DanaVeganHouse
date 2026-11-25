@@ -5,6 +5,7 @@ export const REDIS_URL = 'https://redis.fake'
 export function installFakes() {
   const data = new Map() // key → string, or Map for hashes
   const telegram = []    // every Bot API call: { method, body }
+  const telegramErrors = {} // method → description, to make that Bot API method fail
   let messageId = 100
   const realFetch = globalThis.fetch
 
@@ -28,9 +29,10 @@ export function installFakes() {
     const m = /^https:\/\/api\.telegram\.org\/bot[^/]+\/(\w+)$/.exec(u)
     if (m) {
       telegram.push({ method: m[1], body: JSON.parse(init.body) })
+      if (telegramErrors[m[1]]) return Response.json({ ok: false, description: telegramErrors[m[1]] })
       return Response.json({ ok: true, result: m[1] === 'sendMessage' ? { message_id: ++messageId } : true })
     }
     return realFetch(url, init)
   }
-  return { data, telegram, restore: () => { globalThis.fetch = realFetch } }
+  return { data, telegram, telegramErrors, restore: () => { globalThis.fetch = realFetch } }
 }
