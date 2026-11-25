@@ -67,16 +67,18 @@ Có 3 vai trò. Ai trong nhóm mà chưa được phân quyền thì là **Nhân
 | Đổi quyền `/quyen` | | | ✓ |
 | Chuyển bot sang nhóm khác (`/batdau` ở nhóm mới) | | | ✓ |
 
-**Cách đổi quyền** (chỉ chủ quán): nhờ người đó nhắn một tin bất kỳ trong nhóm, rồi **trả lời (reply)** tin đó bằng:
-- `/quyen chu`: thành chủ quán (có thể có nhiều chủ quán).
-- `/quyen quanly`: thành quản lý ca.
-- `/quyen nhanvien`: về lại nhân viên.
+**Cách đổi quyền** (chỉ chủ quán): gõ quyền rồi tên hoặc @username của người đó:
+- `/quyen chu Lan`: thành chủ quán (có thể có nhiều chủ quán).
+- `/quyen quanly Minh`: thành quản lý ca.
+- `/quyen nhanvien @hoa_nguyen`: về lại nhân viên.
 
-Gõ `/quyen` (không reply) để xem ai đang giữ quyền gì. Quán luôn phải còn ít nhất một chủ quán.
+Bot chỉ biết những ai đã gõ lệnh hoặc bấm nút trong nhóm (Telegram không cho bot đọc tin nhắn thường). Nếu bot báo "chưa biết", nhờ người đó gõ `/homnay` một lần rồi gõ lại lệnh. Nếu nhiều người trùng tên, bot liệt kê kèm số id để chọn, ví dụ `/quyen quanly 123456789`. Trả lời (reply) tin nhắn của người đó bằng `/quyen quanly` cũng được, nếu Telegram gửi kèm tin được trả lời cho bot.
 
-Quản trị viên nhóm đang bật **Ẩn danh** (Remain anonymous) gửi tin dưới tên nhóm, nên bot không biết họ là ai và không phân quyền cho họ được. Người đó cần tắt Ẩn danh (Quản lý nhóm → Quản trị viên → chọn người đó), rồi nhắn một tin mới để chủ quán reply.
+Gõ `/quyen` để xem ai đang giữ quyền gì. Quán luôn phải còn ít nhất một chủ quán.
 
-Khi có người nghỉ việc: xoá người đó khỏi nhóm Telegram là họ không dùng được bot nữa. Nếu họ là quản lý ca hoặc chủ quán, trước khi xoá hãy reply một tin cũ của họ bằng `/quyen nhanvien`, để nếu sau này họ được thêm lại vào nhóm thì không còn giữ quyền cũ.
+Quản trị viên nhóm đang bật **Ẩn danh** (Remain anonymous) gửi tin dưới tên nhóm, nên bot không biết họ là ai và không phân quyền cho họ được. Người đó cần tắt Ẩn danh (Quản lý nhóm → Quản trị viên → chọn người đó), rồi gõ `/homnay` một lần.
+
+Khi có người nghỉ việc: xoá người đó khỏi nhóm Telegram là họ không dùng được bot nữa. Nếu họ là quản lý ca hoặc chủ quán, trước khi xoá hãy gõ `/quyen nhanvien <tên>`, để nếu sau này họ được thêm lại vào nhóm thì không còn giữ quyền cũ.
 
 ## Quy tắc đang dùng
 
@@ -98,6 +100,7 @@ Các số này nằm ở đầu `api/booking.ts` và có thể đổi:
 
 - Xem dữ liệu: Vercel → Storage → database → **Open in Upstash → Data Browser**. Mỗi ngày là một mục `day:2026-11-26`.
 - Đổi sang nhóm Telegram khác (kể cả khi nhóm cũ đã bị xoá): chủ quán thêm bot vào nhóm mới rồi gõ `/batdau` ở đó. Quyền gắn với từng người nên vẫn giữ nguyên. Tin đặt bàn cũ nằm lại ở nhóm cũ; muốn đổi trạng thái các bàn đó thì dùng `/huy` hoặc `/homnay` ở nhóm mới.
+- Những người bot đã biết (để đổi quyền theo tên) nằm ở khoá `tg:people`.
 - Danh sách quyền nằm ở khoá `tg:roles`. Muốn phân quyền lại từ đầu: xoá cả `tg:chat` và `tg:roles`, rồi gõ `/batdau`; người gõ sẽ là chủ quán.
 - Đổi bot (token mới): sửa `TELEGRAM_BOT_TOKEN` trên Vercel, Redeploy, rồi mở lại link ở bước 5.
 

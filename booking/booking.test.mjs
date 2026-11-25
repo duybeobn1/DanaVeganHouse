@@ -225,8 +225,8 @@ test('roles: only owners change roles, a second owner can be added, and one owne
   const LAN = { id: 4, first_name: 'Lan' }
   await say('/quyen chu', { from: STAFF_USER, replyTo: STAFF_USER })
   assert.equal(lastText(), 'Chỉ chủ quán mới đổi quyền được.')
-  await say('/quyen chu') // owner, but not replying to anyone
-  assert.match(lastText(), /^Trả lời \(reply\) tin nhắn/)
+  await say('/quyen chu') // owner, but naming no one and not replying to anyone
+  assert.match(lastText(), /^Cú pháp: \/quyen quanly Hoa/)
   await say('/quyen chủ quán', { replyTo: LAN })
   assert.equal(lastText(), 'Lan: Chủ quán')
   await say('/quyen nhanvien', { replyTo: OWNER }) // two owners, so Duy may step down
@@ -252,7 +252,28 @@ test('anonymous admins and channel posts get no role, and the bot says why', asy
   assert.equal(fakes.data.get('tg:chat'), String(STAFF)) // not moved
   assert.deepEqual([...fakes.data.get('tg:roles').keys()], ['1'])
   await say('/quyen sep', { replyTo: STAFF_USER })
-  assert.match(lastText(), /^Quyền phải là chu, quanly hoặc nhanvien/)
+  assert.match(lastText(), /^Cú pháp: \/quyen quanly Hoa/)
+})
+
+test('the owner sets a role by name, @username or id, without replying', async t => {
+  setup(t)
+  const HOA2 = { id: 5, first_name: 'Hoa', last_name: 'Trần', username: 'hoatran' }
+  await say('/quyen quanly Hoa')
+  assert.match(lastText(), /^Bot chưa biết "Hoa"\. Nhờ người đó gõ \/homnay/)
+  await say('/homnay', { from: STAFF_USER }) // Telegram only shows the bot commands and button presses
+  await say('/quyen quản lý ca hoa')
+  assert.equal(lastText(), 'Hoa: Quản lý ca')
+  await press('s:DXXXXXX:left', { from: HOA2 }) // a button press is enough to be known
+  await say('/quyen nhanvien Hoa')
+  assert.match(lastText(), /^Có 2 người khớp "Hoa":\nHoa · id 2\nHoa Trần @hoatran · id 5\nGhi rõ hơn, ví dụ \/quyen nhanvien 2$/)
+  await say('/quyen chủ quán @HoaTran')
+  assert.equal(lastText(), 'Hoa Trần: Chủ quán')
+  await say('/quyen nhanvien 2')
+  assert.equal(lastText(), 'Hoa: Nhân viên')
+  await say('/quyen')
+  assert.match(lastText(), /^Chủ quán: Duy\nChủ quán: Hoa Trần\n/)
+  await say('/quyen quanly Hoa', { chat: -999 }) // another chat: ignored, and nobody there is remembered
+  assert.equal(fakes.data.get('tg:people').size, 3)
 })
 
 test('/dat over capacity needs a manager or owner', async t => {

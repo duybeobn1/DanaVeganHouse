@@ -338,7 +338,7 @@ const HELP = [
   'Nút "Không đến", "Huỷ", "↩️ Hoàn tác" — /huy D1A2B3C — /dat vượt sức chứa',
   '',
   'Chủ quán:',
-  'Trả lời (reply) tin nhắn của một người bằng /quyen chu, /quyen quanly hoặc /quyen nhanvien. Gõ /quyen để xem ai giữ quyền gì.',
+  '/quyen quanly Hoa — đổi quyền theo tên hoặc @username (chu, quanly, nhanvien). Gõ /quyen để xem ai giữ quyền gì.',
   'Gõ /batdau ở nhóm khác để chuyển bot sang nhóm đó.',
 ].join('\n')
 
@@ -374,9 +374,26 @@ const ANONYMOUS_SELF = 'Bạn đang gửi tin ẩn danh dưới tên nhóm, nên
 const anonymousTarget = (title = '') => `Tin bạn trả lời được gửi dưới tên "${title}", không phải tên một người, nên bot không biết là ai. ` +
   'Nếu người đó là quản trị viên đang bật "Ẩn danh" (Remain anonymous), nhờ họ tắt đi và nhắn một tin mới, rồi trả lời tin mới đó.'
 
+/** "Quản lý  Ca" → "quan ly ca", for matching what staff type. */
+const fold = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/đ/g, 'd').replace(/\s+/g, ' ').trim()
+
+// Everyone who has used the bot in the staff group, so the owner can name them in /quyen. In privacy mode Telegram
+// only passes the bot commands and button presses, so someone who has done neither is not known yet.
+const remember = (u: TgUser) => redis('HSET', 'tg:people', String(u.id),
+  JSON.stringify({ id: u.id, first_name: u.first_name, last_name: u.last_name, username: u.username }))
+
+/** People the bot has seen whose id or @username is `query`; failing that, whose name contains it as whole words. */
+async function findPeople(query: string): Promise<TgUser[]> {
+  const people = (await redis<string[]>('HGETALL', 'tg:people')).filter((_, i) => i % 2).map(v => JSON.parse(v) as TgUser)
+  const q = fold(query.replace(/^@/, ''))
+  const exact = people.filter(p => String(p.id) === q || fold(p.username ?? '') === q)
+  // Names are not unique, so "Hoa" finds both "Hoa" and "Hoa Trần" and the owner must pick.
+  return exact.length ? exact : people.filter(p => ` ${fold(userName(p))} `.includes(` ${q} `))
+}
+
 /** "chu", "chủ quán", "quanly", "Quản lý ca", "nhanvien", … → role. */
 function parseRole(words: string[]): Role | null {
-  const w = words.join('').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/đ/g, 'd')
+  const w = fold(words.join(''))
   if (['chu', 'chuquan', 'owner', 'admin'].includes(w)) return 'owner'
   if (['quanly', 'quanlyca', 'manager'].includes(w)) return 'manager'
   if (['nhanvien', 'staff'].includes(w)) return 'staff'
@@ -390,6 +407,7 @@ async function onUpdate(u: TgUpdate) {
     const [, id, action] = String(q.data).split(':') as [string, string, Status | 'undo']
     let text = 'Không đổi được'
     let alert = false
+    if (String(q.message?.chat.id) === chat) await remember(q.from)
     if (String(q.message?.chat.id) !== chat) {
       // a button from some other chat: ignore
     } else if ((action === 'undo' || MANAGER_STATUSES.includes(action)) && !(await can(q.from, 'manager'))) {
@@ -430,6 +448,7 @@ async function onUpdate(u: TgUpdate) {
     return reply(`Đã chuyển bot sang nhóm này. Nhóm cũ không còn nhận tin đặt bàn nữa.\n\n${HELP}`)
   }
   if (here !== chat) return // strangers who find the bot get nothing
+  if (!m.sender_chat) await remember(m.from)
 
   const now = nowHanoi()
   if (cmd === '/khach') {
@@ -466,18 +485,32 @@ async function onUpdate(u: TgUpdate) {
       : `${b.id} đã ở trạng thái "${STATUS_VI[b.status]}", không huỷ nữa.`)
   }
   if (cmd === '/quyen') {
-    const target = m.reply_to_message?.from
+    const usage = 'Cú pháp: /quyen quanly Hoa\nQuyền là chu, quanly hoặc nhanvien; sau đó ghi tên hoặc @username của người đó (hoặc trả lời tin nhắn của họ).'
     if (!args.length) {
       const list = (await roles()).filter(r => r.role !== 'staff').sort((a, b) => RANK[b.role] - RANK[a.role])
         .map(r => `${ROLE_VI[r.role]}: ${r.name}`)
-      return reply([...list, 'Mọi người khác trong nhóm: Nhân viên.', '',
-        'Chủ quán đổi quyền: trả lời (reply) tin nhắn của người đó bằng /quyen chu, /quyen quanly hoặc /quyen nhanvien.'].join('\n'))
+      return reply([...list, 'Mọi người khác trong nhóm: Nhân viên.', '', `Chủ quán đổi quyền. ${usage}`].join('\n'))
     }
     if (!(await can(m.from, 'owner'))) return reply(m.sender_chat ? ANONYMOUS_SELF : 'Chỉ chủ quán mới đổi quyền được.')
-    const role = parseRole(args)
-    if (!role) return reply('Quyền phải là chu, quanly hoặc nhanvien. Ví dụ: trả lời tin nhắn của người đó bằng /quyen quanly.')
-    if (m.reply_to_message?.sender_chat) return reply(anonymousTarget(m.reply_to_message.sender_chat.title))
-    if (!target) return reply('Trả lời (reply) tin nhắn của người cần đổi quyền bằng /quyen chu, /quyen quanly hoặc /quyen nhanvien.')
+    // The role may be several words ("quản lý ca"); whatever follows it names the person.
+    let k = args.length
+    while (k && !parseRole(args.slice(0, k))) k--
+    const role = parseRole(args.slice(0, k))
+    const who = args.slice(k).join(' ')
+    if (!role) return reply(usage)
+    let target = m.reply_to_message?.from
+    if (who) {
+      const found = await findPeople(who)
+      if (!found.length) return reply(`Bot chưa biết "${who}". Nhờ người đó gõ /homnay trong nhóm (hoặc bấm một nút dưới tin đặt bàn), rồi gõ lại lệnh này.`)
+      if (found.length > 1) {
+        return reply([`Có ${found.length} người khớp "${who}":`, ...found.map(p => `${userName(p)}${p.username ? ` @${p.username}` : ''} · id ${p.id}`),
+          `Ghi rõ hơn, ví dụ /quyen ${args.slice(0, k).join(' ')} ${found[0].id}`].join('\n'))
+      }
+      target = found[0]
+    } else if (m.reply_to_message?.sender_chat) {
+      return reply(anonymousTarget(m.reply_to_message.sender_chat.title))
+    }
+    if (!target) return reply(usage)
     if (target.is_bot) return reply('Không phân quyền cho bot được.')
     const owners = (await roles()).filter(r => r.role === 'owner')
     if (role !== 'owner' && owners.length === 1 && owners[0].id === String(target.id)) return reply('Quán cần ít nhất một chủ quán.')
