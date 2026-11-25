@@ -148,7 +148,7 @@ test('the bot ignores forged webhooks and strangers; /batdau registers only the 
   assert.match(lastText(), /Đã gắn bot với nhóm này\. Duy là chủ quán\./)
   assert.equal(JSON.parse(fakes.data.get('tg:roles').get('1')).role, 'owner')
   await say('/batdau', { chat: 777, from: STAFF_USER })
-  assert.equal(lastText(), 'Bot đã được gắn với một nhóm khác.')
+  assert.match(lastText(), /^Bot đã được gắn với một nhóm khác\. Chỉ chủ quán mới chuyển/)
   assert.equal(fakes.data.get('tg:chat'), String(STAFF))
   const before = fakes.telegram.length
   await say('/khach 5', { chat: 777 })
@@ -355,4 +355,32 @@ test('a walk-in marked as left by mistake can be seated again', async t => {
   assert.equal(calls('answerCallbackQuery').at(-1).body.text, `${id}: Đang ngồi`)
   await say('/homnay')
   assert.match(lastText(), /đang ngồi 3\/30/)
+})
+
+test('an owner moves the bot to a new group with /batdau; roles carry over and old messages are left alone', async t => {
+  setup(t)
+  const NEW = -2002
+  const { id } = await post(guest) // posted in the old group
+  await say('/quyen quanly', { replyTo: MANAGER })
+
+  await say('/batdau', { chat: NEW, from: MANAGER }) // a manager cannot move it
+  assert.match(lastText(), /^Bot đã được gắn với một nhóm khác/)
+  assert.equal(fakes.data.get('tg:chat'), String(STAFF))
+
+  await say('/batdau', { chat: NEW })
+  assert.match(lastText(), /^Đã chuyển bot sang nhóm này/)
+  assert.equal(fakes.data.get('tg:chat'), String(NEW))
+
+  const before = fakes.telegram.length
+  await say('/homnay') // the old group no longer works
+  assert.equal(fakes.telegram.length, before)
+
+  await say(`/huy ${id}`, { chat: NEW, from: MANAGER }) // roles still apply in the new group
+  assert.match(lastText(), /^Đã huỷ /)
+  assert.equal(calls('editMessageText').length, 0) // the old group's message is not edited in the new group
+
+  const next = await post({ ...guest, phone: '0900000009' })
+  assert.equal(calls('sendMessage').at(-1).body.chat_id, String(NEW))
+  await press(`s:${next.id}:confirmed`, { chat: NEW, from: STAFF_USER })
+  assert.equal(calls('editMessageText').at(-1).body.chat_id, String(NEW))
 })

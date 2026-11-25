@@ -28,7 +28,7 @@ Khách → danaveganhouse.com/reserve → /api/booking (Vercel) → Upstash Redi
    - Bot phải nối với tên miền chính, vì Telegram không gọi được vào link preview (link preview cần đăng nhập Vercel).
 5. **Nối bot với website**: mở `https://danaveganhouse.com/api/booking?action=telegram-setup` trong trình duyệt. Thấy `"ok": true` là xong.
 6. **Gắn nhóm**: chủ quán gõ `/batdau` trong nhóm Telegram. Bot trả lời "Đã gắn bot với nhóm này" kèm danh sách lệnh, và **người gõ `/batdau` thành chủ quán**.
-   - Làm ngay sau bước 5: nhóm đầu tiên gõ `/batdau` sẽ được gắn và khoá lại.
+   - Làm ngay sau bước 5: nhóm đầu tiên gõ `/batdau` sẽ được gắn và khoá lại. Sau đó chỉ chủ quán mới chuyển bot sang nhóm khác được.
    - Sau đó phân quyền cho chủ quán thứ hai và các quản lý ca (xem mục **Phân quyền**).
 7. **Thử trên bản preview**: vào Vercel → Deployments, **Redeploy** bản Preview mới nhất để nó nhận biến môi trường, rồi mở link đó khi đã đăng nhập Vercel. Website chính và bản preview dùng chung database và bot.
    - Đặt một bàn và xem tin nhắn hiện trong nhóm.
@@ -65,6 +65,7 @@ Có 3 vai trò. Ai trong nhóm mà chưa được phân quyền thì là **Nhân
 | Bấm **↩️ Hoàn tác** | | ✓ | ✓ |
 | `/dat` khi đã vượt 30 khách | | ✓ | ✓ |
 | Đổi quyền `/quyen` | | | ✓ |
+| Chuyển bot sang nhóm khác (`/batdau` ở nhóm mới) | | | ✓ |
 
 **Cách đổi quyền** (chỉ chủ quán): nhờ người đó nhắn một tin bất kỳ trong nhóm, rồi **trả lời (reply)** tin đó bằng:
 - `/quyen chu`: thành chủ quán (có thể có nhiều chủ quán).
@@ -94,7 +95,8 @@ Các số này nằm ở đầu `api/booking.ts` và có thể đổi:
 ## Dữ liệu
 
 - Xem dữ liệu: Vercel → Storage → database → **Open in Upstash → Data Browser**. Mỗi ngày là một mục `day:2026-11-26`.
-- Đổi sang nhóm Telegram khác: trong Data Browser, xoá khoá `tg:chat`, rồi gõ `/batdau` ở nhóm mới. Danh sách quyền nằm ở khoá `tg:roles`. Muốn phân quyền lại từ đầu: xoá cả `tg:chat` và `tg:roles`, rồi gõ `/batdau`; người gõ sẽ là chủ quán.
+- Đổi sang nhóm Telegram khác (kể cả khi nhóm cũ đã bị xoá): chủ quán thêm bot vào nhóm mới rồi gõ `/batdau` ở đó. Quyền gắn với từng người nên vẫn giữ nguyên. Tin đặt bàn cũ nằm lại ở nhóm cũ; muốn đổi trạng thái các bàn đó thì dùng `/huy` hoặc `/homnay` ở nhóm mới.
+- Danh sách quyền nằm ở khoá `tg:roles`. Muốn phân quyền lại từ đầu: xoá cả `tg:chat` và `tg:roles`, rồi gõ `/batdau`; người gõ sẽ là chủ quán.
 - Đổi bot (token mới): sửa `TELEGRAM_BOT_TOKEN` trên Vercel, Redeploy, rồi mở lại link ở bước 5.
 
 ## Giới hạn cần biết

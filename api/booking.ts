@@ -21,6 +21,7 @@ type Booking = {
   msg?: number // its Telegram message
   by?: string  // staff member who last changed the status
   prev?: Status // status before it was closed, for undo
+  chat?: string // staff chat its message was posted in (message ids are only unique within a chat)
 }
 type Now = { date: string; min: number }
 type Req = Record<string, unknown>
@@ -249,14 +250,15 @@ async function announce(b: Booking, extra: string) {
   const chat = await staffChat()
   if (!chat) return
   const sent = await tg<{ message_id: number }>('sendMessage', { chat_id: chat, text: `${bookingText(b)}\n${extra}`, reply_markup: buttons(b) })
-  if (sent) await save({ ...b, msg: sent.message_id })
+  if (sent) await save({ ...b, msg: sent.message_id, chat })
 }
 
 /** Saves a booking and updates its message in the staff group. */
 async function commit(b: Booking) {
   await save(b)
   const chat = await staffChat()
-  if (chat && b.msg) await tg('editMessageText', { chat_id: chat, message_id: b.msg, text: bookingText(b), reply_markup: buttons(b) })
+  // After the bot moves to another group, old messages are left alone rather than editing a wrong one there.
+  if (chat && b.msg && b.chat === chat) await tg('editMessageText', { chat_id: chat, message_id: b.msg, text: bookingText(b), reply_markup: buttons(b) })
   return b
 }
 
@@ -312,7 +314,7 @@ async function guestCancel(req: Req, ip: string) {
   if (chat) await tg('sendMessage', {
     chat_id: chat,
     text: `❌ Khách tự huỷ: ${b.time} ${dmy(b.date)} · ${b.guests} khách · ${b.name}`,
-    ...(b.msg ? { reply_parameters: { message_id: b.msg, allow_sending_without_reply: true } } : {}),
+    ...(b.msg && b.chat === chat ? { reply_parameters: { message_id: b.msg, allow_sending_without_reply: true } } : {}),
   })
   return { ok: true, date: b.date, time: b.time, guests: b.guests }
 }
@@ -337,6 +339,7 @@ const HELP = [
   '',
   'Chủ quán:',
   'Trả lời (reply) tin nhắn của một người bằng /quyen chu, /quyen quanly hoặc /quyen nhanvien. Gõ /quyen để xem ai giữ quyền gì.',
+  'Gõ /batdau ở nhóm khác để chuyển bot sang nhóm đó.',
 ].join('\n')
 
 const COMMANDS = [
@@ -410,13 +413,16 @@ async function onUpdate(u: TgUpdate) {
   const reply = (text: string) => tg('sendMessage', { chat_id: here, text })
 
   if (cmd === '/batdau') {
-    // First chat to register becomes the staff chat and its sender the first owner; after that it is locked
-    // (reset: delete tg:chat and tg:roles in Upstash).
+    // First chat to register becomes the staff chat and its sender the first owner. After that only an owner
+    // can move the bot, by sending /batdau in the new group; roles belong to people, so they carry over.
     if (await redis('SET', 'tg:chat', here, 'NX')) {
       await setRole(m.from, 'owner')
       return reply(`Đã gắn bot với nhóm này. ${userName(m.from)} là chủ quán.\n\n${HELP}`)
     }
-    return reply(chat === here ? `Bot đã gắn với nhóm này.\n\n${HELP}` : 'Bot đã được gắn với một nhóm khác.')
+    if (chat === here) return reply(`Bot đã gắn với nhóm này.\n\n${HELP}`)
+    if (!(await can(m.from, 'owner'))) return reply('Bot đã được gắn với một nhóm khác. Chỉ chủ quán mới chuyển bot sang nhóm mới được.')
+    await redis('SET', 'tg:chat', here)
+    return reply(`Đã chuyển bot sang nhóm này. Nhóm cũ không còn nhận tin đặt bàn nữa.\n\n${HELP}`)
   }
   if (here !== chat) return // strangers who find the bot get nothing
 
