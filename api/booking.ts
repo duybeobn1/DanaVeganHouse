@@ -3,7 +3,7 @@
 // tables with buttons, and log walk-ins with /khach. Setup: booking/README.md.
 import { createHash, randomUUID } from 'node:crypto'
 
-const CAPACITY = 30             // max guests in the restaurant at the same time (bookings + walk-ins)
+const CAPACITY = 40             // max guests in the restaurant at the same time (bookings + walk-ins)
 const STAY_MINUTES = 120        // how long a table is assumed to stay
 const SLOT_MINUTES = 30
 const FIRST_SLOT = 11 * 60
@@ -109,7 +109,7 @@ function availability(rows: Booking[], date: string, now: Now) {
   }
 }
 
-/** Validates a web booking against the rules and the 30-guest cap, given the rows of that day. */
+/** Validates a web booking against the rules and the guest cap, given the rows of that day. */
 function checkBooking(rows: Booking[], req: Req, now: Now) {
   const start = toMinutes(String(req.time ?? ''))
   if (!slotTimes().includes(start)) return { ok: false, error: 'invalid_time' } as Fail
@@ -280,7 +280,7 @@ async function undo(id: string, by: string) {
 async function book(req: Req, ip: string) {
   if (req.website) return { ok: true, id: 'ok' } // honeypot filled: a bot; pretend success, save nothing
   // Loose limits on attempts (guests behind one carrier IP may retry), tight limit on saved bookings
-  // so one sender cannot fill the 30-seat cap.
+  // so one sender cannot fill the seat cap.
   if (await tooMany(`book:${ip}`, 20, 3600) || await tooMany('book', 60, 600)) return busy
   if (toInt(await redis('GET', `rl:saved:${ip}`)) >= 3) return { ok: false, error: 'limit' }
   const now = nowHanoi()

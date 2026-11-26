@@ -46,10 +46,10 @@ test('a web booking is saved and posted to the staff group with buttons', async 
   const res = await post(guest)
   assert.equal(res.ok, true)
   assert.match(res.id, /^D[0-9A-F]{6}$/)
-  assert.equal(await seats('19:00'), 26)
+  assert.equal(await seats('19:00'), 36)
   const msg = calls('sendMessage').at(-1).body
   assert.equal(msg.chat_id, String(STAFF))
-  assert.match(msg.text, /25\/11\/2026 · 19:00 · 4 khách\nLan · 0912 345 678\nMã: D[0-9A-F]{6} · Chờ xác nhận\nChỗ còn lại khung 19:00: 26\/30/)
+  assert.match(msg.text, /25\/11\/2026 · 19:00 · 4 khách\nLan · 0912 345 678\nMã: D[0-9A-F]{6} · Chờ xác nhận\nChỗ còn lại khung 19:00: 36\/40/)
   assert.deepEqual(msg.reply_markup.inline_keyboard.map(row => row.map(b => b.text)), [['✅ Xác nhận'], ['Đã về', 'Không đến', 'Huỷ']])
 })
 
@@ -59,18 +59,18 @@ test('before a staff group is registered, bookings still work and nothing is sen
   assert.equal(calls('sendMessage').length, 0)
 })
 
-test('the 30-guest cap counts overlapping bookings and walk-ins from /khach', async t => {
+test('the guest cap counts overlapping bookings and walk-ins from /khach', async t => {
   setup(t, { now: `${DAY}T18:00:00+07:00` })
   assert.equal((await post({ ...guest, phone: '0900000001', guests: 10, time: '18:30' })).ok, true)
   assert.equal((await post({ ...guest, phone: '0900000002', guests: 10, time: '19:30' })).ok, true)
-  await say('/khach 8') // 18:00, stays until 20:00
-  assert.match(lastText(), /Khách vãng lai[\s\S]*Đang ngồi: 8\/30/)
+  await say('/khach 18') // 18:00, stays until 20:00
+  assert.match(lastText(), /Khách vãng lai[\s\S]*Đang ngồi: 18\/40/)
 
-  // 19:30–21:30 overlaps the 18:30 booking until 20:30 and the walk-in until 20:00: peak 28 seated.
+  // 19:30–21:30 overlaps the 18:30 booking until 20:30 and the walk-in until 20:00: peak 38 seated.
   assert.deepEqual(await post({ ...guest, phone: '0900000003', guests: 3, time: '19:30' }), { ok: false, error: 'full', remaining: 2 })
   assert.equal((await post({ ...guest, phone: '0900000003', guests: 2, time: '19:30' })).ok, true)
   // 20:30: the 18:30 booking and the walk-in have left; only the 19:30 groups (12) remain.
-  assert.equal(await seats('20:30'), 18)
+  assert.equal(await seats('20:30'), 28)
 })
 
 test('rejects bad dates, too-soon slots, bad input, and bots', async t => {
@@ -88,7 +88,7 @@ test('rejects bad dates, too-soon slots, bad input, and bots', async t => {
   assert.equal(await err({ phone: 'call me' }), 'invalid_phone')
   assert.equal(await err({ email: 'nope' }), 'invalid_email')
   assert.deepEqual(await post({ ...guest, website: 'spam.example' }), { ok: true, id: 'ok' }) // honeypot
-  assert.equal(await seats('19:00'), 30)
+  assert.equal(await seats('19:00'), 40)
 })
 
 test('one phone number gets at most two bookings per day', async t => {
@@ -109,13 +109,13 @@ test('one IP can save at most 3 bookings in 6 hours, but may retry failed attemp
 test('a guest cancels with booking code + phone: seats are freed and staff are told', async t => {
   setup(t)
   const { id } = await post({ ...guest, guests: 10 })
-  assert.equal(await seats('19:00'), 20)
+  assert.equal(await seats('19:00'), 30)
   assert.equal((await post({ action: 'cancel', id, phone: '0999 999 999' })).error, 'not_found') // right code, wrong phone
   assert.equal((await post({ action: 'cancel', id: 'DABCDEF', phone: guest.phone })).error, 'not_found')
   // Code is case-insensitive; +84 and 0 forms of the same number match.
   assert.deepEqual(await post({ action: 'cancel', id: ` ${id.toLowerCase()} `, phone: '+84 912 345 678' }),
     { ok: true, date: DAY, time: '19:00', guests: 10 })
-  assert.equal(await seats('19:00'), 30)
+  assert.equal(await seats('19:00'), 40)
   assert.match(lastText(), /Khách tự huỷ: 19:00 25\/11\/2026 · 10 khách · Lan/)
   const edit = calls('editMessageText').at(-1).body
   assert.match(edit.text, /Khách tự huỷ$/)
@@ -154,16 +154,16 @@ test('the bot ignores forged webhooks and strangers; /batdau registers only the 
   await say('/khach 5', { chat: 777 })
   await say('/homnay', { chat: 777 })
   assert.equal(fakes.telegram.length, before) // no reply, nothing recorded
-  assert.equal(await seats('12:30'), 30)
+  assert.equal(await seats('12:30'), 40)
 })
 
 test('staff buttons change a booking’s status, free its seats, and update the message', async t => {
   setup(t)
   const { id } = await post(guest)
   await press(`s:${id}:noshow`, { chat: 777 }) // not the staff group: ignored
-  assert.equal(await seats('19:00'), 26)
+  assert.equal(await seats('19:00'), 36)
   await press(`s:${id}:noshow`)
-  assert.equal(await seats('19:00'), 30)
+  assert.equal(await seats('19:00'), 40)
   assert.match(calls('editMessageText').at(-1).body.text, /Không đến \(Duy\)$/)
   assert.equal(calls('answerCallbackQuery').at(-1).body.text, `${id}: Không đến`)
 })
@@ -171,9 +171,9 @@ test('staff buttons change a booking’s status, free its seats, and update the 
 test('/dat records a phone booking, warns when over capacity, and explains bad syntax', async t => {
   setup(t)
   await say('/dat 25/11 19h 6 Bàn anh Hùng 0987.654.321')
-  assert.match(lastText(), /📞 Đặt bàn qua điện thoại\n25\/11\/2026 · 19:00 · 6 khách\nBàn anh Hùng · 0987\.654\.321[\s\S]*Chỗ còn lại khung 19:00: 24\/30/)
-  assert.equal(await seats('19:00'), 24)
-  await say('/dat nay 19:30 30 Tiệc công ty')
+  assert.match(lastText(), /📞 Đặt bàn qua điện thoại\n25\/11\/2026 · 19:00 · 6 khách\nBàn anh Hùng · 0987\.654\.321[\s\S]*Chỗ còn lại khung 19:00: 34\/40/)
+  assert.equal(await seats('19:00'), 34)
+  await say('/dat nay 19:30 40 Tiệc công ty')
   assert.match(lastText(), /⚠️ Vượt sức chứa 6 khách/)
   await say('/dat mai 19:00')
   assert.match(lastText(), /^Cú pháp: \/dat/)
@@ -185,12 +185,12 @@ test('/homnay shows who is seated, free seats and today’s list; /huy cancels b
   const id = /Mã: (D[0-9A-F]{6})/.exec(lastText())[1]
   await say('/khach 3')
   await say('/homnay')
-  assert.match(lastText(), /^Hôm nay 25\/11\/2026 · đang ngồi 7\/30/)
+  assert.match(lastText(), /^Hôm nay 25\/11\/2026 · đang ngồi 7\/40/)
   assert.match(lastText(), /18:00 · 4 khách · Minh · D[0-9A-F]{6}\n19:00 · 3 khách · vãng lai/)
   await say(`/huy ${id.toLowerCase()}`)
   assert.match(lastText(), /^Đã huỷ D[0-9A-F]{6}: 18:00 25\/11\/2026 · 4 khách · Minh/)
   await say('/homnay')
-  assert.match(lastText(), /đang ngồi 3\/30/)
+  assert.match(lastText(), /đang ngồi 3\/40/)
 })
 
 test('telegram-setup points the webhook at this deployment with the derived secret', async t => {
@@ -209,9 +209,9 @@ test('roles: staff log walk-ins and mark tables left; only managers and owners c
   assert.equal(calls('answerCallbackQuery').at(-1).body.text, 'Chỉ quản lý ca hoặc chủ quán mới làm được việc này.')
   await say(`/huy ${id}`, { from: STAFF_USER })
   assert.match(lastText(), /^Chỉ quản lý ca hoặc chủ quán/)
-  assert.equal(await seats('19:00'), 26)
+  assert.equal(await seats('19:00'), 36)
   await press(`s:${id}:left`, { from: STAFF_USER })
-  assert.equal(await seats('19:00'), 30)
+  assert.equal(await seats('19:00'), 40)
 
   await say('/quyen Quản lý ca', { replyTo: MANAGER })
   assert.equal(lastText(), 'Minh: Quản lý ca')
@@ -278,8 +278,8 @@ test('the owner sets a role by name, @username or id, without replying', async t
 
 test('/dat over capacity needs a manager or owner', async t => {
   setup(t)
-  await say('/dat nay 19:00 28 Tiệc', { from: STAFF_USER })
-  assert.match(lastText(), /Chỗ còn lại khung 19:00: 2\/30/)
+  await say('/dat nay 19:00 38 Tiệc', { from: STAFF_USER })
+  assert.match(lastText(), /Chỗ còn lại khung 19:00: 2\/40/)
   await say('/dat nay 19:00 4 Lan', { from: STAFF_USER })
   assert.match(lastText(), /^Không thêm được: vượt sức chứa 2 khách/)
   assert.equal(await seats('19:00'), 2)
@@ -314,13 +314,13 @@ test('any staff member can confirm a web booking; the seats stay held and closed
   const edit = calls('editMessageText').at(-1).body
   assert.match(edit.text, /Mã: D[0-9A-F]{6} · Đã xác nhận \(Hoa\)$/)
   assert.deepEqual(edit.reply_markup.inline_keyboard.map(row => row.map(b => b.text)), [['Đã về', 'Không đến', 'Huỷ']])
-  assert.equal(await seats('19:00'), 26)
+  assert.equal(await seats('19:00'), 36)
 
   await press(`s:${id}:cancelled`)
-  assert.equal(await seats('19:00'), 30)
+  assert.equal(await seats('19:00'), 40)
   await press(`s:${id}:confirmed`, { from: STAFF_USER }) // stale button on an old message
   assert.equal(calls('answerCallbackQuery').at(-1).body.text, `${id}: Huỷ`)
-  assert.equal(await seats('19:00'), 30)
+  assert.equal(await seats('19:00'), 40)
   await say(`/huy ${id}`)
   assert.match(lastText(), /^Đã huỷ /)
 })
@@ -342,16 +342,16 @@ test('Hoàn tác reopens a booking closed by mistake; only managers and owners m
   const { id } = await post(guest)
   await press(`s:${id}:confirmed`, { from: STAFF_USER })
   await press(`s:${id}:noshow`)
-  assert.equal(await seats('19:00'), 30)
+  assert.equal(await seats('19:00'), 40)
   assert.deepEqual(keyboard(), [['↩️ Hoàn tác']])
 
   await press(`s:${id}:undo`, { from: STAFF_USER })
   assert.equal(calls('answerCallbackQuery').at(-1).body.text, 'Chỉ quản lý ca hoặc chủ quán mới làm được việc này.')
-  assert.equal(await seats('19:00'), 30)
+  assert.equal(await seats('19:00'), 40)
 
   await press(`s:${id}:undo`)
   assert.equal(calls('answerCallbackQuery').at(-1).body.text, `${id}: Đã xác nhận`)
-  assert.equal(await seats('19:00'), 26) // seats held again
+  assert.equal(await seats('19:00'), 36) // seats held again
   assert.match(calls('editMessageText').at(-1).body.text, /Mã: D[0-9A-F]{6} · Đã xác nhận \(Duy hoàn tác\)$/)
   assert.deepEqual(keyboard(), [['Đã về', 'Không đến', 'Huỷ']])
   await press(`s:${id}:undo`) // nothing left to undo
@@ -365,14 +365,14 @@ test('a guest’s own cancellation cannot be undone', async t => {
   assert.deepEqual(keyboard(), [])
   await press(`s:${id}:undo`)
   assert.equal(calls('answerCallbackQuery').at(-1).body.text, 'Không đổi được')
-  assert.equal(await seats('19:00'), 30)
+  assert.equal(await seats('19:00'), 40)
 })
 
 test('undoing into a full slot reopens the booking but alerts the manager', async t => {
   setup(t)
   const { id } = await post(guest)
   await say(`/huy ${id}`)
-  await say('/dat nay 19:00 28 Tiệc') // the freed seats are given away
+  await say('/dat nay 19:00 38 Tiệc') // the freed seats are given away
   await press(`s:${id}:undo`)
   const answer = calls('answerCallbackQuery').at(-1).body
   assert.equal(answer.text, `${id}: Chờ xác nhận · ⚠️ Vượt sức chứa 2 khách`)
@@ -386,14 +386,14 @@ test('a walk-in marked as left by mistake can be seated again', async t => {
   const id = /Mã: (D[0-9A-F]{6})/.exec(lastText())[1]
   await press(`s:${id}:left`, { from: STAFF_USER })
   await say('/homnay')
-  assert.match(lastText(), /đang ngồi 0\/30/)
+  assert.match(lastText(), /đang ngồi 0\/40/)
   await press(`s:${id}:undo`, { from: MANAGER }) // Minh is still staff here, so refused
   assert.equal(calls('answerCallbackQuery').at(-1).body.text, 'Chỉ quản lý ca hoặc chủ quán mới làm được việc này.')
   await say('/quyen quanly', { replyTo: MANAGER })
   await press(`s:${id}:undo`, { from: MANAGER })
   assert.equal(calls('answerCallbackQuery').at(-1).body.text, `${id}: Đang ngồi`)
   await say('/homnay')
-  assert.match(lastText(), /đang ngồi 3\/30/)
+  assert.match(lastText(), /đang ngồi 3\/40/)
 })
 
 test('an owner moves the bot to a new group with /batdau; roles carry over and old messages are left alone', async t => {

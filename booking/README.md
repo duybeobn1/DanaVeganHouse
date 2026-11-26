@@ -1,6 +1,6 @@
 # Đặt bàn online — Dāna Vegan House
 
-Khách đặt bàn trên website (`/reserve`). Mỗi lượt đặt được lưu vào database Upstash Redis và báo ngay vào nhóm Telegram của nhân viên. Hệ thống không cho đặt khi quán đã đủ **30 khách cùng lúc**, tính cả khách đặt trước lẫn khách vãng lai.
+Khách đặt bàn trên website (`/reserve`). Mỗi lượt đặt được lưu vào database Upstash Redis và báo ngay vào nhóm Telegram của nhân viên. Hệ thống không cho đặt khi quán đã đủ **40 khách cùng lúc**, tính cả khách đặt trước lẫn khách vãng lai.
 
 ```
 Khách → danaveganhouse.com/reserve → /api/booking (Vercel) → Upstash Redis
@@ -43,7 +43,7 @@ Khách → danaveganhouse.com/reserve → /api/booking (Vercel) → Upstash Redi
 |---|---|
 | Bàn đặt online | Hiện thành tin nhắn "Chờ xác nhận" có nút **✅ Xác nhận** và **Đã về · Không đến · Huỷ**. Gọi hoặc nhắn lại khách, rồi bấm **Xác nhận**: tin đổi thành "Đã xác nhận (tên người bấm)". Bàn vẫn được giữ chỗ ngay từ lúc khách đặt, kể cả khi chưa xác nhận. `/homnay` đánh dấu ⏳ các bàn chưa xác nhận. |
 | Khách vãng lai | `/khach 5` (có thể thêm ghi chú: `/khach 5 bàn ngoài`). Bot báo số khách đang ngồi. Khi nhóm đó về, bấm **Đã về** dưới tin nhắn. |
-| Khách gọi điện / nhắn Facebook | `/dat 26/11 19:00 6 Chị Mai 0912345678`. Ngày có thể ghi `nay` hoặc `mai`, giờ có thể ghi `19h` hoặc `19h30`, số điện thoại không bắt buộc. Nếu vượt 30 khách, chỉ quản lý ca hoặc chủ quán thêm được, và bot kèm cảnh báo. |
+| Khách gọi điện / nhắn Facebook | `/dat 26/11 19:00 6 Chị Mai 0912345678`. Ngày có thể ghi `nay` hoặc `mai`, giờ có thể ghi `19h` hoặc `19h30`, số điện thoại không bắt buộc. Nếu vượt 40 khách, chỉ quản lý ca hoặc chủ quán thêm được, và bot kèm cảnh báo. |
 | Xem tình hình | `/homnay`, `/homnay mai`, `/homnay 26/11`: số khách đang ngồi, chỗ trống từng khung giờ, danh sách bàn. |
 | Khách gọi điện xin huỷ | Quản lý ca gõ `/huy D1A2B3C` (mã có trong tin nhắn của bàn đó). |
 | Khách tự huỷ | Khách nhập mã đặt bàn và số điện thoại ở cuối trang `/reserve`. Nhóm nhận tin "❌ Khách tự huỷ" và các nút ở tin gốc biến mất. Chỉ huỷ online được trước giờ đến. Việc khách tự huỷ không hoàn tác được. |
@@ -63,7 +63,7 @@ Có 3 vai trò. Ai trong nhóm mà chưa được phân quyền thì là **Nhân
 | Thêm bàn khách gọi điện `/dat` (còn chỗ) | ✓ | ✓ | ✓ |
 | Bấm **Không đến**, **Huỷ**, gõ `/huy` | | ✓ | ✓ |
 | Bấm **↩️ Hoàn tác** | | ✓ | ✓ |
-| `/dat` khi đã vượt 30 khách | | ✓ | ✓ |
+| `/dat` khi đã vượt 40 khách | | ✓ | ✓ |
 | Đổi quyền `/quyen` | | | ✓ |
 | Chuyển bot sang nhóm khác (`/batdau` ở nhóm mới) | | | ✓ |
 
@@ -86,7 +86,7 @@ Các số này nằm ở đầu `api/booking.ts` và có thể đổi:
 
 | Quy tắc | Giá trị |
 |---|---|
-| Sức chứa tối đa cùng lúc | 30 khách |
+| Sức chứa tối đa cùng lúc | 40 khách |
 | Thời gian mỗi bàn được tính là đang ngồi | 2 tiếng |
 | Khung giờ đặt online | 11:00 – 20:30, mỗi 30 phút |
 | Số khách tối đa mỗi lượt đặt online | 10 (đông hơn thì gọi điện hoặc email danaveganhouse@gmail.com) |
